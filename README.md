@@ -195,16 +195,13 @@ echo "Resultados em $EXP_DIR"
 
 ---
 
-## Contribuições
-
-1. Abra uma issue descrevendo a proposta.
-2. Submeta PR com testes e documentação.
-3. Documente prompts e seeds de experimento.
-
----
-
 ## Referências
 
 * *ClarifyGPT: A Framework for Enhancing LLM-Based Code Generation via Requirements Clarification*
 * *Supporting Software Formal Verification with Large Language Models: An Experimental Study*
 * *Model Generation with LLMs: From Requirements to UML Sequence Diagrams*
+
+---
+
+## Link para a apresentação
+https://www.canva.com/design/DAG6afP4Lts/Fdh4B7xiqyb4uKx1iJ4XIg/edit?utm_content=DAG6afP4Lts&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
