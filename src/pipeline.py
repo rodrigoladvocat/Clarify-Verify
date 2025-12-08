@@ -1,19 +1,19 @@
 """
 Pipeline principal: orquestra Clarify -> Generate -> Verify -> Feedback loop.
-"""t
+"""
 
 import json
 import os
 import argparse
 from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
-from daetime import datetime
+from datetime import datetime
 
 from .clarifier import Clarifier
 from .uml_generator import UMLGenerator
 from .code_generator import CodeGenerator
 from .verifier import Verifier, VerificationResult
-from .llm_client import LLMClient, OpenAIClient, MockLLMClient
+from .llm_client import LLMClient, OpenAIClient, OllamaClient, MockLLMClient
 
 
 @dataclass
@@ -294,15 +294,21 @@ def main():
     # Inicializa cliente LLM
     model_config = config.get('model', {})
     provider = model_config.get('provider', 'openai')
-    
+
+    # Prefer Ollama when requested or when model is deepseekr1
     if provider == 'openai':
         llm_client = OpenAIClient(
             model=model_config.get('name', 'gpt-4o-mini'),
             api_key=os.getenv('OPENAI_API_KEY')
         )
+    elif provider == 'ollama' or model_config.get('name') == 'deepseekr1':
+        llm_client = OllamaClient(
+            model=model_config.get('name', 'deepseekr1'),
+            base_url=os.getenv('OLLAMA_BASE_URL')
+        )
     else:
         # Fallback para mock em desenvolvimento
-        print("Usando MockLLMClient (configure OPENAI_API_KEY para usar API real)")
+        print(f"Usando MockLLMClient (provider='{provider}' não configurado para produção)")
         llm_client = MockLLMClient()
     
     # Cria pipeline
