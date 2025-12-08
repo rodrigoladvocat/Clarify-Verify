@@ -5,6 +5,7 @@ Gera especificações UML em PlantUML.
 
 from typing import Dict, Optional
 from dataclasses import dataclass
+import logging
 
 
 @dataclass
@@ -26,6 +27,7 @@ class UMLGenerator:
             llm_client: Cliente LLM
         """
         self.llm_client = llm_client
+        self.logger = logging.getLogger(__name__)
     
     def generate_sequence_diagram(self, refined_requirement: str) -> UMLDiagram:
         """
@@ -55,6 +57,7 @@ Formato de resposta:
 
 Inclua também uma breve descrição do diagrama após o código."""
         
+        self.logger.debug("Generating sequence diagram from refined requirement")
         response = self.llm_client.generate(prompt)
         
         # Extrai código PlantUML
@@ -91,6 +94,7 @@ Formato de resposta (se aplicável):
 @enduml
 ```"""
         
+        self.logger.debug("Generating class diagram if applicable")
         response = self.llm_client.generate(prompt)
         
         if "NÃO APLICÁVEL" in response.upper() or "NOT APPLICABLE" in response.upper():

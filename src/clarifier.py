@@ -5,6 +5,7 @@ Gera perguntas de esclarecimento para requisitos ambíguos usando LLMs.
 
 import json
 from typing import List, Dict, Optional
+import logging
 from dataclasses import dataclass
 
 
@@ -29,6 +30,7 @@ class Clarifier:
         """
         self.llm_client = llm_client
         self.max_questions = max_questions
+        self.logger = logging.getLogger(__name__)
     
     def detect_ambiguity(self, requirement: str) -> bool:
         """
@@ -52,6 +54,7 @@ class Clarifier:
 
         Responda apenas com "SIM" ou "NÃO"."""
         
+        self.logger.debug("Detecting ambiguity for requirement")
         response = self.llm_client.generate(prompt)
         return "SIM" in response.upper()
     
@@ -84,6 +87,7 @@ class Clarifier:
             ]
         }}"""
         
+        self.logger.debug("Generating clarification questions (max=%d)", self.max_questions)
         response = self.llm_client.generate(prompt)
         
         # Tenta extrair JSON da resposta
@@ -168,6 +172,7 @@ class Clarifier:
 
         Requisito refinado:"""
         
+        self.logger.debug("Refining requirement using Q/A pairs")
         response = self.llm_client.generate(prompt)
         return response.strip()
 

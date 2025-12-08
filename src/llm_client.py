@@ -5,6 +5,7 @@ Cliente LLM abstrato para diferentes provedores (OpenAI, Anthropic, etc.).
 from abc import ABC, abstractmethod
 from typing import Optional
 import os
+import logging
 
 
 class LLMClient(ABC):
@@ -43,10 +44,12 @@ class OpenAIClient(LLMClient):
             raise ImportError("Instale openai: pip install openai")
         
         self.model = model
+        self.logger = logging.getLogger(__name__)
     
     def generate(self, prompt: str, temperature: float = 0.0) -> str:
         """Gera resposta usando OpenAI API."""
         try:
+            self.logger.debug("Calling OpenAI chat.completions with model=%s", self.model)
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
@@ -55,8 +58,11 @@ class OpenAIClient(LLMClient):
                 ],
                 temperature=temperature
             )
-            return response.choices[0].message.content
+            content = response.choices[0].message.content
+            self.logger.debug("OpenAI response length=%d", len(content) if content else 0)
+            return content
         except Exception as e:
+            self.logger.error("OpenAI error: %s", e)
             raise RuntimeError(f"Erro ao chamar OpenAI API: {str(e)}")
 
 
@@ -70,6 +76,7 @@ class OllamaClient(LLMClient):
         self.model = model
         self.base_url = base_url or os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434')
         self.remove_think_tags = remove_think_tags
+        self.logger = logging.getLogger(__name__)
 
         try:
             import ollama  # noqa: F401
@@ -80,23 +87,33 @@ class OllamaClient(LLMClient):
         import ollama
         import re
         try:
+            self.logger.info("Generating via Ollama model=%s temperature=%s", self.model, temperature)
             # Ensure model is available locally
             try:
-                ollama.pull(self.model)
+                self.logger.info("Attempting to pull model=%s", self.model)
+                # check if the mode is already present
+                ollama_models = ollama.list_models()
+                if self.model not in [m['name'] for m in ollama_models]:
+                    self.logger.info("Model %s not found locally, pulling...", self.model)
+                    ollama.pull(self.model)
             except Exception:
                 # Ignore pull errors; model might already be present
-                pass
+                self.logger.debug("Model pull skipped or failed; continuing")
 
             output = ollama.generate(
                 model=self.model,
                 prompt=prompt,
                 options={"temperature": float(temperature)}
             )
-            content = output.get("response") if isinstance(output, dict) else str(output)
+            content = output.response
+            self.logger.info("Raw Ollama response length=%s", content)
             if self.remove_think_tags and content:
                 content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL)
-            return content.strip()
+            cleaned = content.strip() if content else ""
+            self.logger.info("Ollama response length=%d", len(cleaned))
+            return cleaned
         except Exception as e:
+            self.logger.error("Ollama error: %s", e)
             raise RuntimeError(f"Erro ao chamar Ollama (python): {e}")
 
 # Disposabke function

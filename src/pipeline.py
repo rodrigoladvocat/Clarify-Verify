@@ -8,6 +8,7 @@ import argparse
 from typing import Dict, List, Optional
 from dataclasses import dataclass, asdict
 from datetime import datetime
+import logging
 
 from .clarifier import Clarifier
 from .uml_generator import UMLGenerator
@@ -45,6 +46,7 @@ class Pipeline:
         """
         self.llm_client = llm_client
         self.config = config
+        self.logger = logging.getLogger(__name__)
         
         # Inicializa componentes
         self.clarifier = Clarifier(
@@ -85,9 +87,11 @@ class Pipeline:
         
         # Etapa 1: Clarificação
         if self.config.get('use_clarification', True):
+            self.logger.info("Starting clarification stage")
             is_ambiguous = self.clarifier.detect_ambiguity(requirement)
             
             if is_ambiguous:
+                self.logger.debug("Requirement ambiguous; generating questions")
                 questions = self.clarifier.generate_questions(requirement)
                 clarification_questions = [
                     {
@@ -100,6 +104,7 @@ class Pipeline:
                 
                 # Simula ou obtém respostas
                 if simulate_answers:
+                    self.logger.debug("Simulating answers to questions")
                     answers = self._simulate_answers(questions, requirement)
                 else:
                     answers = self._get_user_answers(questions)
@@ -112,6 +117,7 @@ class Pipeline:
         uml_diagram = None
         if self.config.get('generate_uml', True):
             try:
+                self.logger.info("Generating UML diagram")
                 uml_diagram = self.uml_generator.generate_sequence_diagram(refined_requirement)
                 uml_diagrams.append({
                     'type': uml_diagram.diagram_type,
@@ -119,7 +125,7 @@ class Pipeline:
                     'description': uml_diagram.description
                 })
             except Exception as e:
-                print(f"Erro ao gerar UML: {e}")
+                self.logger.error("Erro ao gerar UML: %s", e)
         
         # Etapa 3: Geração de código e verificação (loop)
         current_code = ""
@@ -129,6 +135,7 @@ class Pipeline:
         
         for iteration in range(self.max_iterations):
             iterations = iteration + 1
+            self.logger.info("Iteration %d/%d - code generation", iterations, self.max_iterations)
             
             # Gera código
             try:
@@ -139,10 +146,11 @@ class Pipeline:
                 current_code = generated.code
                 current_tests = generated.tests
             except Exception as e:
-                print(f"Erro ao gerar código: {e}")
+                self.logger.error("Erro ao gerar código: %s", e)
                 break
             
             # Verifica código
+            self.logger.info("Running verification tools")
             results = self.verifier.verify(
                 current_code,
                 current_tests,
@@ -167,24 +175,27 @@ class Pipeline:
             all_passed = all(r.status.value == 'pass' for r in results)
             if all_passed:
                 final_status = "success"
+                self.logger.info("All verifications passed; finishing.")
                 break
             
             # Se não passou e ainda há iterações, tenta corrigir
             if iteration < self.max_iterations - 1:
                 error_summary = self.verifier.get_error_summary(results)
                 try:
+                    self.logger.info("Attempting code repair based on errors")
                     current_code = self.code_generator.repair_code(
                         current_code,
                         error_summary
                     )
                 except Exception as e:
-                    print(f"Erro ao corrigir código: {e}")
+                    self.logger.error("Erro ao corrigir código: %s", e)
                     break
             else:
                 final_status = "failed"
         
         # Calcula métricas
         metrics = self._calculate_metrics(verification_results, iterations)
+        self.logger.info("Pipeline finished with status=%s after %d iteration(s)", final_status, iterations)
         
         return PipelineResult(
             requirement_id=requirement_id,
@@ -215,6 +226,7 @@ Pergunta: {q.question}
 
 Responda de forma concisa (1-2 frases):"""
             
+            self.logger.debug("Simulating answer for question: %s", q.question)
             answer = self.llm_client.generate(prompt)
             answers[q.question] = answer.strip()
         

@@ -10,6 +10,7 @@ import json
 from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
+import logging
 
 
 class VerificationStatus(Enum):
@@ -47,6 +48,7 @@ class Verifier:
         self.run_tests = run_tests
         self.run_linter = run_linter
         self.run_formal = run_formal
+        self.logger = logging.getLogger(__name__)
     
     def verify(self, code: str, tests: str, language: str = "python") -> List[VerificationResult]:
         """
@@ -63,14 +65,17 @@ class Verifier:
         results = []
         
         if self.run_tests:
+            self.logger.debug("Running tests")
             test_result = self._run_tests(code, tests, language)
             results.append(test_result)
         
         if self.run_linter:
+            self.logger.debug("Running linter")
             linter_result = self._run_linter(code, language)
             results.append(linter_result)
         
         if self.run_formal:
+            self.logger.debug("Running formal verification")
             formal_result = self._run_formal_verification(code, language)
             results.append(formal_result)
         
@@ -270,5 +275,7 @@ class Verifier:
             if result.status == VerificationStatus.FAIL:
                 errors.append(f"[{result.tool}] {chr(10).join(result.errors[:3])}")
         
-        return '\n\n'.join(errors) if errors else ""
+        summary = '\n\n'.join(errors) if errors else ""
+        self.logger.debug("Error summary length=%d", len(summary))
+        return summary
 

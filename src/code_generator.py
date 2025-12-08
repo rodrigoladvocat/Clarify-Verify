@@ -5,6 +5,7 @@ Gera código e testes unitários usando LLMs.
 
 from typing import Optional, Dict
 from dataclasses import dataclass
+import logging
 
 
 @dataclass
@@ -29,6 +30,7 @@ class CodeGenerator:
         """
         self.llm_client = llm_client
         self.language = language
+        self.logger = logging.getLogger(__name__)
     
     def generate(self, refined_requirement: str, 
                  uml_diagram: Optional[str] = None) -> GeneratedCode:
@@ -51,6 +53,7 @@ class CodeGenerator:
             ```
             """
         
+        self.logger.info("Generating initial code and tests for language=%s", self.language)
         prompt = f"""Você é um desenvolvedor experiente. Implemente a(s) função(ões) necessárias conforme o requisito final abaixo. 
 
         Requisito final:
@@ -169,6 +172,7 @@ class CodeGenerator:
 
         Código corrigido:"""
         
+        self.logger.info("Repairing code based on error summary")
         response = self.llm_client.generate(prompt)
         
         # Extrai apenas o código corrigido
