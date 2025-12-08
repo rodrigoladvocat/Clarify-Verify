@@ -1,0 +1,18 @@
+Você é um analista de requisitos. Receba o requisito abaixo e gere até {max_questions} perguntas de esclarecimento necessárias para que um desenvolvedor gere um código correto e não ambíguo. 
+
+Classifique cada pergunta como [Obrigatória|Desejável]. Dê também um motivo curto para cada pergunta.
+
+Requisito:
+"""{requirement}"""
+
+Formato de resposta (JSON):
+{{
+    "questions": [
+        {{
+            "question": "texto da pergunta",
+            "priority": "Obrigatória ou Desejável",
+            "reason": "motivo breve"
+        }}
+    ]
+}}
+

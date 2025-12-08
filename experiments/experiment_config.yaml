@@ -1,0 +1,28 @@
+# Configuração do experimento Clarify-Verify
+
+model:
+  provider: openai  
+  name: gpt-5o-nano  
+  temperature: 0.0
+
+dataset:
+  path: data/processed/sample_50.json
+  seed: 42
+
+pipeline:
+  use_clarification: true
+  generate_uml: true
+  clarifier_max_questions: 5
+  max_iterations: 3
+  language: python
+
+verify:
+  run_tests: true
+  run_linter: true
+  run_formal: false 
+
+output:
+  save_code: true
+  save_uml: true
+  save_intermediate: false
+

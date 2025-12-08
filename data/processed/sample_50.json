@@ -1,0 +1,33 @@
+[
+  {
+    "id": "req_001",
+    "requirement": "Write a function to sort a list of elements",
+    "category": "sorting",
+    "difficulty": "easy"
+  },
+  {
+    "id": "req_002",
+    "requirement": "Implement a function that calculates the factorial of a number",
+    "category": "math",
+    "difficulty": "easy"
+  },
+  {
+    "id": "req_003",
+    "requirement": "Create a function to find the maximum element in a list",
+    "category": "search",
+    "difficulty": "easy"
+  },
+  {
+    "id": "req_004",
+    "requirement": "Write a function that checks if a string is a palindrome",
+    "category": "string",
+    "difficulty": "easy"
+  },
+  {
+    "id": "req_005",
+    "requirement": "Implement a function to reverse a string",
+    "category": "string",
+    "difficulty": "easy"
+  }
+]
+

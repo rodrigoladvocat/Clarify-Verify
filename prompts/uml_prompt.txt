@@ -1,0 +1,18 @@
+Com base no requisito final (após respostas às perguntas), gere uma especificação em PlantUML de um diagrama de sequência que represente:
+- A sequência principal do fluxo de eventos
+- Os principais atores/componentes envolvidos
+- As mensagens trocadas entre os componentes
+- Adicione anotações breves sobre invariantes e pré-condições quando relevante
+
+Requisito final:
+"""{refined_requirement}"""
+
+Formato de resposta:
+```plantuml
+@startuml
+[seu código PlantUML aqui]
+@enduml
+```
+
+Inclua também uma breve descrição do diagrama após o código.
+

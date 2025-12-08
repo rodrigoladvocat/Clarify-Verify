@@ -1,0 +1,27 @@
+# Clarify-Verify: Extensão de ClarifyGPT com Verificação Formal e Geração UML
+
+# LLM Clients
+openai>=1.0.0
+
+# Configuração
+python-dotenv>=1.0.0
+pyyaml>=6.0
+
+# Testes
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# Análise estática
+pylint>=2.15.0
+flake8>=6.0.0
+
+# Processamento de dados
+pandas>=2.0.0
+
+# Visualização (opcional)
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# PlantUML (para renderização de diagramas - opcional)
+# Instale Java e PlantUML separadamente ou use serviço online
+

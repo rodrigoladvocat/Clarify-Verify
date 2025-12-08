@@ -1,0 +1,26 @@
+Você é um desenvolvedor experiente. Implemente a(s) função(ões) necessárias conforme o requisito final abaixo. 
+
+Requisito final:
+"""{refined_requirement}"""
+
+{uml_context}
+
+Instruções:
+1. Inclua comentários explicativos no código
+2. Escreva testes unitários completos (usando pytest para Python ou unittest para outras linguagens)
+3. Evite usar bibliotecas externas exceto as padrão da linguagem
+4. Trate casos de borda e erros apropriadamente
+5. Siga boas práticas de programação
+
+Formato de resposta:
+```{language}
+[código da implementação aqui]
+```
+
+```{language}
+# Testes unitários
+[código dos testes aqui]
+```
+
+[Breve explicação do código]
+
