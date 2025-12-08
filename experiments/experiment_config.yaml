@@ -1,8 +1,8 @@
 # Configuração do experimento Clarify-Verify
 
 model:
-  provider: openai  
-  name: gpt-5o-nano  
+  provider: ollama  
+  name: deepseek-r1:1.5b
   temperature: 0.0
 
 dataset:

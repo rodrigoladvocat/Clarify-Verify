@@ -59,6 +59,46 @@ class OpenAIClient(LLMClient):
         except Exception as e:
             raise RuntimeError(f"Erro ao chamar OpenAI API: {str(e)}")
 
+
+class OllamaClient(LLMClient):
+    """Cliente para Ollama local usando o pacote Python `ollama`.
+
+    Compatível com modelos como `deepseek-r1` (ex.: `deepseek-r1:1.5b`).
+    """
+
+    def __init__(self, model: str = "deepseek-r1:1.5b", base_url: str = None, remove_think_tags: bool = True):
+        self.model = model
+        self.base_url = base_url or os.getenv('OLLAMA_BASE_URL', 'http://localhost:11434')
+        self.remove_think_tags = remove_think_tags
+
+        try:
+            import ollama  # noqa: F401
+        except ImportError:
+            raise ImportError("Instale ollama: pip install ollama")
+
+    def generate(self, prompt: str, temperature: float = 0.0) -> str:
+        import ollama
+        import re
+        try:
+            # Ensure model is available locally
+            try:
+                ollama.pull(self.model)
+            except Exception:
+                # Ignore pull errors; model might already be present
+                pass
+
+            output = ollama.generate(
+                model=self.model,
+                prompt=prompt,
+                options={"temperature": float(temperature)}
+            )
+            content = output.get("response") if isinstance(output, dict) else str(output)
+            if self.remove_think_tags and content:
+                content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL)
+            return content.strip()
+        except Exception as e:
+            raise RuntimeError(f"Erro ao chamar Ollama (python): {e}")
+
 # Disposabke function
 class MockLLMClient(LLMClient):
     """Cliente mock para testes sem API real."""
