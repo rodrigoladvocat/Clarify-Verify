@@ -84,6 +84,10 @@ class Verifier:
     def _run_tests(self, code: str, tests: str, language: str) -> VerificationResult:
         """Executa testes unitários."""
         if language == "python":
+            self.logger.info("Running Python tests")
+            self.logger.info("Code to test: %s", code)
+            self.logger.info("Tests to run: %s", tests)
+
             return self._run_python_tests(code, tests)
         else:
             return VerificationResult(
@@ -93,33 +97,52 @@ class Verifier:
                 errors=[],
                 warnings=[]
             )
-    
+
     def _run_python_tests(self, code: str, tests: str) -> VerificationResult:
         """Executa testes Python usando pytest."""
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
                 # Salva código e testes em arquivos temporários
-                code_file = os.path.join(tmpdir, "code.py")
-                test_file = os.path.join(tmpdir, "test_code.py")
-                
+
+                code_file_name = "code.py"
+                test_file_name = "test_code.py"
+
+                code_file = os.path.join(tmpdir, code_file_name)
+                test_file = os.path.join(tmpdir, test_file_name)
+
                 with open(code_file, 'w', encoding='utf-8') as f:
                     f.write(code)
-                
+
                 with open(test_file, 'w', encoding='utf-8') as f:
+                    tests = "from code import *\n\n" + tests
                     f.write(tests)
-                
+
+                # check if test and code files are created and written correctly
+                with open(test_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    if not content.strip():
+                        self.logger.error("Test file is empty")
+                        raise ValueError("Test file is empty")
+                    self.logger.info("Test file content: %s", content)
+
+                with open(code_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                    if not content.strip():
+                        self.logger.error("Code file is empty")
+                        raise ValueError("Code file is empty")
+                    self.logger.info("Code file content: %s", content)
                 try:
                     # Executa pytest
                     result = subprocess.run(
-                        ['python', '-m', 'pytest', test_file, '-v', '--tb=short'],
+                        ['python', '-m', 'pytest',  test_file_name, '-v', '--tb=short'],
                         capture_output=True,
                         text=True,
                         timeout=30,
                         cwd=tmpdir
                     )
-                    
+
                     self.logger.info("Pytest return: %s", str(result.returncode) + str(result.stderr))
-                    
+
                     if result.returncode == 0:
                         status = VerificationStatus.PASS
                         errors = []
@@ -302,7 +325,7 @@ class Verifier:
         errors = []
         for result in results:
             if result.status == VerificationStatus.FAIL:
-                errors.append(f"[{result.tool}] {chr(10).join(result.errors[:3])}")
+                errors.append(f"[{result.tool}] {result.output}")
         
         summary = '\n\n'.join(errors) if errors else ""
         self.logger.info("Error summary length=%d", len(summary))

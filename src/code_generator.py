@@ -66,18 +66,29 @@ class CodeGenerator:
         3. Evite usar bibliotecas externas exceto as padrão da linguagem
         4. Trate casos de borda e erros apropriadamente
         5. Siga boas práticas de programação
+        6. Os blocos de código {self.language} devem ser disponibilizados em blocos diferentes, e não no mesmo bloco de código, para que o parsing seja feito corretamente.
 
         Formato de resposta:
+        <início do formato da resposta>
+        Primeiro bloco de código
         ```{self.language}
         [código da implementação aqui]
         ```
 
+        Segundo bloco de código
         ```{self.language}
         # Testes unitários
         [código dos testes aqui]
         ```
+        
+        Terceira seção
+        [Breve explicação do código]
+        <fim do formato da resposta>
 
-        [Breve explicação do código]"""
+        Utilize o formato de resposta acima rigidamente.
+        
+        O código de implementação e o de testes devem estar em blocos ```{self.language}``` diferentes!!!
+        """
         
         response = self.llm_client.generate(prompt)
         
@@ -97,59 +108,31 @@ class CodeGenerator:
         tests = ""
         explanation = ""
         
-        # Procura por blocos de código
-        lines = response.split('\n')
+        lines = response.splitlines()
+
+        # now get the lines between lines that contain ```
         in_code_block = False
-        in_test_block = False
         current_block = []
-        code_lang = ""
-        
-        i = 0
-        while i < len(lines):
-            line = lines[i]
-            
-            # Detecta início de bloco de código
-            if line.strip().startswith('```'):
-                if in_code_block or in_test_block:
-                    # Fim do bloco anterior
-                    block_content = '\n'.join(current_block)
-                    if in_test_block:
-                        tests = block_content
-                    elif in_code_block:
+        for line in lines:
+            if line.strip().startswith("```"):
+                if in_code_block:
+                    # end of code block
+                    block_content = "\n".join(current_block).strip()
+                    if code == "":
                         code = block_content
+                    else:
+                        tests = block_content
                     current_block = []
                     in_code_block = False
-                    in_test_block = False
                 else:
-                    # Início de novo bloco
-                    code_lang = line.strip().replace('```', '').strip()
-                    if 'test' in code_lang.lower() or 'teste' in code_lang.lower():
-                        in_test_block = True
-                    else:
-                        in_code_block = True
-            elif in_code_block or in_test_block:
+                    in_code_block = True
+            elif in_code_block:
                 current_block.append(line)
             else:
-                # Texto de explicação
-                if line.strip() and not line.strip().startswith('#'):
-                    explanation += line + '\n'
-            
-            i += 1
-        
-        # Se ainda há um bloco aberto
-        if current_block:
-            if in_test_block:
-                tests = '\n'.join(current_block)
-            elif in_code_block:
-                code = '\n'.join(current_block)
-        
-        # Se não encontrou código em blocos, tenta extrair de outra forma
-        if not code:
-            # Procura por funções/classes diretamente
-            code = response
-        
-        return (code.strip(), tests.strip(), explanation.strip())
-    
+                explanation += line + "\n"
+
+        return (code.strip(), tests.strip(), "")
+
     def repair_code(self, current_code: str, error_summary: str) -> str:
         """
         Corrige código com base em erros de verificação.

@@ -2,7 +2,7 @@
 
 model:
   provider: ollama  
-  name: deepseek-r1:1.5b
+  name: deepseek-v3.1:671b-cloud
   temperature: 0.0
 
 dataset:
