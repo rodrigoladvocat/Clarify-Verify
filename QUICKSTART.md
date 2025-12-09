@@ -48,7 +48,7 @@ python -m src.pipeline \
 ### 4. Analisar resultados
 
 ```bash
-python -m src.eval.analysis results/experimento_001/results.json
+python -m src.eval results/experimento_001/results.json
 ```
 
 ## Estrutura de Saída

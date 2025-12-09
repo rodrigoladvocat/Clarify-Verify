@@ -1,0 +1,464 @@
+[
+  {
+    "requirement_id": "req_001",
+    "original_requirement": "Write a function to sort a list of elements",
+    "refined_requirement": "**Requisito Refinado para Função de Ordenação**\n\n**1. Propósito**\nDesenvolver uma função que ordene uma lista de elementos de forma eficiente e segura, retornando uma nova lista ordenada sem modificar a lista original.\n\n**2. Especificações Funcionais**\n- **Entrada**: Aceita uma lista de elementos de qualquer tipo comparável (inteiros, decimais, strings, objetos com implementação de comparação)\n- **Saída**: Retorna uma **nova lista** com os elementos ordenados, mantendo a lista original inalterada\n- **Critério padrão**: Ordem crescente (para números: menor para maior; para strings: ordem alfabética)\n- **Extensibilidade**: A função deve ser projetada para permitir futuras extensões que suportem:\n  - Ordenação decrescente\n  - Critérios personalizados de ordenação (via parâmetro opcional)\n\n**3. Comportamento Específico**\n- **Listas vazias**: Retorna uma lista vazia\n- **Listas com um elemento**: Retorna uma cópia da lista original\n- **Elementos duplicados**: Mantém todos os elementos duplicados, garantindo ordenação estável (preserva a ordem relativa de elementos equivalentes)\n- **Tipos mistos**: A função deve lidar adequadamente com comparações entre tipos compatíveis, seguindo as regras padrão da linguagem\n\n**4. Implementação**\n- **Algoritmo**: Utilizar a função nativa de ordenação da linguagem de programação escolhida (ex: `sorted()` em Python, `Array.sort()` em JavaScript), que geralmente implementa algoritmos otimizados como Timsort ou Quicksort\n- **Eficiência**: Buscar a melhor complexidade possível disponível na linguagem (tipicamente O(n log n) para a maioria dos casos)\n\n**5. Tratamento de Erros**\n- Deve validar se a entrada é uma lista válida\n- Deve lidar com elementos não comparáveis retornando um erro apropriado\n- Deve tratar casos edge como valores `None`/`null` de acordo com as convenções da linguagem\n\n**6. Exemplo de Comportamento Esperado**\n```\nEntrada: [3, 1, 4, 2]\nSaída: [1, 2, 3, 4] (lista original permanece [3, 1, 4, 2])\n\nEntrada: [\"banana\", \"maçã\", \"laranja\"]\nSaída: [\"banana\", \"laranja\", \"maçã\"]\n\nEntrada: [] (lista vazia)\nSaída: []\n```\n\n**7. Notas de Design**\n- Priorizar princípios de imutabilidade e segurança de dados\n- Manter a interface simples e intuitiva\n- Documentar claramente o comportamento e parâmetros opcionais futuros",
+    "clarification_questions": [
+      {
+        "question": "Quais tipos de dados os elementos da lista podem conter? (números inteiros, decimais, strings, objetos complexos, etc.)",
+        "priority": "Obrigatória",
+        "reason": "Diferentes tipos de dados requerem algoritmos e comparações específicas"
+      },
+      {
+        "question": "Qual critério de ordenação deve ser utilizado? (crescente, decrescente, alfabético, numérico, personalizado)",
+        "priority": "Obrigatória",
+        "reason": "Define a direção e lógica da ordenação"
+      },
+      {
+        "question": "Qual algoritmo de ordenação deve ser implementado? (bubble sort, quicksort, mergesort, ou usar função nativa da linguagem)",
+        "priority": "Obrigatória",
+        "reason": "Impacta performance, complexidade e implementação"
+      },
+      {
+        "question": "A função deve modificar a lista original ou retornar uma nova lista ordenada?",
+        "priority": "Obrigatória",
+        "reason": "Define se a operação é in-place ou não, afetando o comportamento"
+      },
+      {
+        "question": "Como a função deve lidar com listas vazias ou com um único elemento?",
+        "priority": "Desejável",
+        "reason": "Casos especiais que podem simplificar a implementação"
+      },
+      {
+        "question": "Existe algum requisito de performance ou complexidade específico?",
+        "priority": "Desejável",
+        "reason": "Pode influenciar a escolha do algoritmo"
+      },
+      {
+        "question": "Como devem ser tratados elementos duplicados na lista?",
+        "priority": "Desejável",
+        "reason": "Define se duplicatas são mantidas e em que ordem"
+      }
+    ],
+    "uml_diagrams": [
+      {
+        "type": "sequence",
+        "plantuml_code": "title Função de Ordenação - Diagrama de Sequência\n\nactor Usuário as User\nparticipant \"Cliente/App\" as Client\nparticipant \"Função de Ordenação\" as SortFunction\nparticipant \"Sistema de Validação\" as Validation\nparticipant \"Algoritmo de Ordenação\" as Algorithm\nparticipant \"Gerenciador de Memória\" as Memory\n\nUser -> Client: Invoca função de ordenação\\ncom lista de entrada\nClient -> SortFunction: sort(input_list)\n\nnote right of SortFunction\n **Pré-condição**: \n - Input deve ser uma lista válida\n - Elementos devem ser comparáveis\nend note\n\nSortFunction -> Validation: validar_entrada(input_list)\nValidation --> SortFunction: resultado_validação\n\nalt Entrada inválida\n    SortFunction --> Client: erro de validação\n    Client --> User: mensagem de erro\nelse Entrada válida\n    SortFunction -> Memory: criar_copia_lista(input_list)\n    Memory --> SortFunction: lista_copia\n    \n    note right of SortFunction\n     **Invariante**: \n     - Lista original permanece inalterada\n    end note\n    \n    SortFunction -> Algorithm: ordenar(lista_copia, criterio)\n    Algorithm --> SortFunction: lista_ordenada\n    \n    note right of Algorithm\n     **Algoritmo**: Timsort/Quicksort\n     **Complexidade**: O(n log n)\n     **Estabilidade**: Preservada\n    end note\n    \n    SortFunction --> Client: lista_ordenada\n    Client --> User: retorna lista ordenada\nend\n\nnote right of User\n **Pós-condição**:\n - Recebe nova lista ordenada\n - Lista original mantida intacta\nend note",
+        "description": "**Descrição do Diagrama:**\n\nEste diagrama de sequência representa o fluxo principal da função de ordenação, mostrando as interações entre os componentes envolvidos:\n\n1. **Ator Principal**: Usuário que invoca a função\n2. **Componentes**:\n   - Cliente/App: Interface que recebe a solicitação\n   - Função de Ordenação: Componente principal que orquestra o processo\n   - Sistema de Validação: Verifica pré-condições da entrada\n   - Algoritmo de Ordenação: Executa a ordenação propriamente dita\n   - Gerenciador de Memória: Garante a imutabilidade criando cópias\n\n3. **Fluxo Principal**: \n   - Validação da entrada\n   - Criação de cópia para preservar original\n   - Execução do algoritmo de ordenação\n   - Retorno da lista ordenada\n\n4. **Anotações**: Incluem pré-condições, invariantes e características do algoritmo, destacando os princípios de imutabilidade e eficiência especificados no requisito."
+      }
+    ],
+    "generated_code": "def ordenar_lista(lista_original, criterio=None, reverso=False):\n    \"\"\"\n    Ordena uma lista de elementos de forma eficiente e segura, retornando uma nova lista ordenada.\n    \n    Args:\n        lista_original: Lista de elementos comparáveis a serem ordenados\n        criterio: Função opcional para critério personalizado de ordenação (ex: key function)\n        reverso: Booleano opcional para ordenação decrescente (padrão: False - crescente)\n    \n    Returns:\n        Nova lista com elementos ordenados\n        \n    Raises:\n        TypeError: Se a entrada não for uma lista válida\n        ValueError: Se a lista contém elementos não comparáveis\n    \"\"\"\n    \n    # Validação da entrada\n    if not isinstance(lista_original, list):\n        raise TypeError(\"A entrada deve ser uma lista válida\")\n    \n    # Casos especiais: lista vazia ou com um elemento\n    if len(lista_original) <= 1:\n        return lista_original.copy()\n    \n    try:\n        # Cria cópia da lista para não modificar a original\n        lista_copia = lista_original.copy()\n        \n        # Ordenação usando algoritmo nativo do Python (Timsort)\n        if criterio is not None:\n            lista_ordenada = sorted(lista_copia, key=criterio, reverse=reverso)\n        else:\n            lista_ordenada = sorted(lista_copia, reverse=reverso)\n            \n        return lista_ordenada\n        \n    except TypeError as e:\n        # Captura erros de comparação entre tipos incompatíveis\n        raise ValueError(f\"Elementos não comparáveis na lista: {e}\") from e\n    except Exception as e:\n        # Captura outros erros inesperados\n        raise RuntimeError(f\"Erro durante a ordenação: {e}\") from e",
+    "generated_tests": "import pytest\nimport sys\n\ndef test_ordenacao_lista_numeros_crescente():\n    \"\"\"Testa ordenação básica de números em ordem crescente\"\"\"\n    entrada = [3, 1, 4, 2]\n    resultado = ordenar_lista(entrada)\n    esperado = [1, 2, 3, 4]\n    assert resultado == esperado\n    assert entrada == [3, 1, 4, 2]  # Lista original inalterada\n\ndef test_ordenacao_lista_strings():\n    \"\"\"Testa ordenação de strings em ordem alfabética\"\"\"\n    entrada = [\"banana\", \"maçã\", \"laranja\"]\n    resultado = ordenar_lista(entrada)\n    esperado = [\"banana\", \"laranja\", \"maçã\"]\n    assert resultado == esperado\n\ndef test_ordenacao_lista_vazia():\n    \"\"\"Testa ordenação de lista vazia\"\"\"\n    entrada = []\n    resultado = ordenar_lista(entrada)\n    assert resultado == []\n    assert resultado is not entrada  # Deve ser nova lista\n\ndef test_ordenacao_lista_um_elemento():\n    \"\"\"Testa ordenação de lista com um elemento\"\"\"\n    entrada = [42]\n    resultado = ordenar_lista(entrada)\n    assert resultado == [42]\n    assert resultado is not entrada  # Deve ser nova lista\n\ndef test_ordenacao_elementos_duplicados():\n    \"\"\"Testa ordenação com elementos duplicados (estabilidade)\"\"\"\n    entrada = [3, 1, 3, 2, 1]\n    resultado = ordenar_lista(entrada)\n    esperado = [1, 1, 2, 3, 3]\n    assert resultado == esperado\n\ndef test_ordenacao_decrescente():\n    \"\"\"Testa ordenação em ordem decrescente\"\"\"\n    entrada = [3, 1, 4, 2]\n    resultado = ordenar_lista(entrada, reverso=True)\n    esperado = [4, 3, 2, 1]\n    assert resultado == esperado\n\ndef test_ordenacao_com_criterio_personalizado():\n    \"\"\"Testa ordenação com critério personalizado\"\"\"\n    entrada = [\"banana\", \"maçã\", \"laranja\"]\n    # Ordenar por comprimento da string\n    resultado = ordenar_lista(entrada, criterio=len)\n    esperado = [\"maçã\", \"banana\", \"laranja\"]  # \"maçã\" tem 4 chars, outros 6\n    assert resultado == esperado\n\ndef test_ordenacao_tipos_mistos_compatíveis():\n    \"\"\"Testa ordenação com tipos mistos compatíveis (números)\"\"\"\n    entrada = [3, 1.5, 2, 0.5]\n    resultado = ordenar_lista(entrada)\n    esperado = [0.5, 1.5, 2, 3]\n    assert resultado == esperado\n\ndef test_erro_entrada_nao_lista():\n    \"\"\"Testa tratamento de erro para entrada não lista\"\"\"\n    with pytest.raises(TypeError):\n        ordenar_lista(\"não é uma lista\")\n\ndef test_erro_elementos_nao_comparaveis():\n    \"\"\"Testa tratamento de erro para elementos não comparáveis\"\"\"\n    entrada = [1, \"string\", 3]  # Inteiro e string não são comparáveis\n    with pytest.raises(ValueError):\n        ordenar_lista(entrada)\n\ndef test_ordenacao_com_none():\n    \"\"\"Testa ordenação com valores None (comportamento padrão Python)\"\"\"\n    entrada = [3, None, 1, 2]\n    # Em Python, None não é comparável com números\n    with pytest.raises(ValueError):\n        ordenar_lista(entrada)\n\ndef test_ordenacao_objetos_comparaveis():\n    \"\"\"Testa ordenação com objetos que implementam comparação\"\"\"\n    class Pessoa:\n        def __init__(self, nome, idade):\n            self.nome = nome\n            self.idade = idade\n        \n        def __lt__(self, other):\n            return self.idade < other.idade\n        \n        def __repr__(self):\n            return f\"Pessoa({self.nome}, {self.idade})\"\n    \n    pessoas = [Pessoa(\"Ana\", 25), Pessoa(\"João\", 30), Pessoa(\"Maria\", 20)]\n    resultado = ordenar_lista(pessoas)\n    assert resultado[0].idade == 20\n    assert resultado[1].idade == 25\n    assert resultado[2].idade == 30\n\ndef test_imutabilidade_lista_original():\n    \"\"\"Testa que a lista original permanece inalterada após múltiplas operações\"\"\"\n    entrada = [5, 2, 8, 1]\n    original_copy = entrada.copy()\n    \n    # Múltiplas operações de ordenação\n    ordenar_lista(entrada)\n    ordenar_lista(entrada, reverso=True)\n    ordenar_lista(entrada, criterio=lambda x: -x)\n    \n    assert entrada == original_copy\n\nif __name__ == \"__main__\":\n    pytest.main([__file__, \"-v\"])",
+    "verification_results": [
+      {
+        "iteration": 1,
+        "results": [
+          {
+            "tool": "tests",
+            "status": "fail",
+            "output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.0, pytest-8.2.0, pluggy-1.5.0 -- C:\\Users\\ladvo\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\ladvo\\AppData\\Local\\Temp\\tmpl_4cnts4\nplugins: anyio-4.4.0\ncollecting ... collected 7 items\n\ntest_code.py::test_sort_list_basic PASSED                                [ 14%]\ntest_code.py::test_sort_list_edge_cases PASSED                           [ 28%]\ntest_code.py::test_sort_list_reverse PASSED                              [ 42%]\ntest_code.py::test_sort_list_custom_key PASSED                           [ 57%]\ntest_code.py::test_sort_list_immutability PASSED                         [ 71%]\ntest_code.py::test_sort_list_error_handling PASSED                       [ 85%]\ntest_code.py::test_sort_list_with_none_values FAILED                     [100%]\n\n================================== FAILURES ===================================\n_______________________ test_sort_list_with_none_values _______________________\ncode.py:30: in sort_list\n    sorted_list = sorted(list_copy, reverse=reverse, key=key)\nE   TypeError: '<' not supported between instances of 'NoneType' and 'NoneType'\n\nDuring handling of the above exception, another exception occurred:\ntest_code.py:80: in test_sort_list_with_none_values\n    assert sort_list([None, None]) == [None, None]\ncode.py:35: in sort_list\n    raise TypeError(f\"Elementos não comparáveis: {e}\")\nE   TypeError: Elementos não comparáveis: '<' not supported between instances of 'NoneType' and 'NoneType'\n=========================== short test summary info ===========================\nFAILED test_code.py::test_sort_list_with_none_values - TypeError: Elementos n...\n========================= 1 failed, 6 passed in 0.08s =========================\n",
+            "errors": [],
+            "warnings": []
+          },
+          {
+            "tool": "linter",
+            "status": "pass",
+            "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n",
+            "errors": [],
+            "warnings": []
+          }
+        ]
+      },
+      {
+        "iteration": 2,
+        "results": [
+          {
+            "tool": "tests",
+            "status": "pass",
+            "output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.0, pytest-8.2.0, pluggy-1.5.0 -- C:\\Users\\ladvo\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\ladvo\\AppData\\Local\\Temp\\tmppypg4sam\nplugins: anyio-4.4.0\ncollecting ... collected 13 items\n\ntest_code.py::test_ordenacao_lista_numeros_crescente PASSED              [  7%]\ntest_code.py::test_ordenacao_lista_strings PASSED                        [ 15%]\ntest_code.py::test_ordenacao_lista_vazia PASSED                          [ 23%]\ntest_code.py::test_ordenacao_lista_um_elemento PASSED                    [ 30%]\ntest_code.py::test_ordenacao_elementos_duplicados PASSED                 [ 38%]\ntest_code.py::test_ordenacao_decrescente PASSED                          [ 46%]\ntest_code.py::test_ordenacao_com_criterio_personalizado PASSED           [ 53%]\ntest_code.py::test_ordenacao_tipos_mistos_compatíveis PASSED             [ 61%]\ntest_code.py::test_erro_entrada_nao_lista PASSED                         [ 69%]\ntest_code.py::test_erro_elementos_nao_comparaveis PASSED                 [ 76%]\ntest_code.py::test_ordenacao_com_none PASSED                             [ 84%]\ntest_code.py::test_ordenacao_objetos_comparaveis PASSED                  [ 92%]\ntest_code.py::test_imutabilidade_lista_original PASSED                   [100%]\n\n============================= 13 passed in 0.03s ==============================\n",
+            "errors": [],
+            "warnings": []
+          },
+          {
+            "tool": "linter",
+            "status": "pass",
+            "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n",
+            "errors": [],
+            "warnings": []
+          }
+        ]
+      }
+    ],
+    "iterations": 2,
+    "final_status": "success",
+    "metrics": {
+      "iterations": 2,
+      "tests_passed": true,
+      "linter_passed": true,
+      "total_verifications": 2,
+      "passed_verifications": 2
+    }
+  },
+  {
+    "requirement_id": "req_002",
+    "original_requirement": "Implement a function that calculates the factorial of a number",
+    "refined_requirement": "**Requisito Refinado: Implementação da Função Fatorial**\n\n**1. Propósito**\nImplementar uma função que calcule o fatorial de um número inteiro não negativo.\n\n**2. Especificações da Função**\n\n**2.1. Nome da Função**\n- `factorial`\n\n**2.2. Parâmetro de Entrada**\n- `n`: Um número inteiro não negativo\n- Tipo: `int`\n- Valores aceitos: inteiros ≥ 0\n\n**2.3. Valor de Retorno**\n- Tipo: `int` (preferencialmente usando big integer para suportar valores grandes)\n- Descrição: O resultado do cálculo do fatorial de n (n!)\n\n**2.4. Comportamento Esperado**\n- Para n = 0: retorna 1 (conforme definição matemática)\n- Para n > 0: retorna o produto de todos os inteiros positivos de 1 até n\n- Para n < 0: lança uma exceção `ValueError` com mensagem descritiva\n\n**3. Validação de Entrada**\nA função deve validar o parâmetro de entrada antes do cálculo:\n- Verificar se n é um número inteiro\n- Verificar se n é não negativo (≥ 0)\n- Caso alguma validação falhe, lançar `ValueError` com mensagem apropriada\n\n**4. Considerações de Implementação**\n- Pode ser implementada usando abordagem iterativa ou recursiva\n- Deve considerar limites práticos de overflow (12! para inteiros de 32 bits, 20! para inteiros de 64 bits)\n- Recomenda-se usar big integer para suportar cálculos além desses limites\n\n**5. Exemplos de Uso**\n- `factorial(0)` → retorna `1`\n- `factorial(5)` → retorna `120`\n- `factorial(-1)` → lança `ValueError`\n- `factorial(3.5)` → lança `ValueError`\n\n**6. Tratamento de Erros**\n- Entradas inválidas (decimais, strings, números negativos) devem resultar em `ValueError`\n- A mensagem de erro deve indicar claramente a natureza do problema",
+    "clarification_questions": [
+      {
+        "question": "Qual é o tipo de entrada esperado para a função? (inteiro, decimal, string)",
+        "priority": "Obrigatória",
+        "reason": "Define o tipo de dado que a função deve aceitar e validar"
+      },
+      {
+        "question": "Como a função deve lidar com números negativos? (lançar exceção, retornar erro, retornar valor específico)",
+        "priority": "Obrigatória",
+        "reason": "Fatorial não é definido para números negativos, precisa definir comportamento"
+      },
+      {
+        "question": "Qual deve ser o resultado para o fatorial de 0? (deve retornar 1 conforme definição matemática?)",
+        "priority": "Obrigatória",
+        "reason": "0! = 1 por definição, mas precisa confirmar se será implementado assim"
+      },
+      {
+        "question": "Há um limite máximo para o número de entrada? (considerando overflow em diferentes tipos de dados)",
+        "priority": "Obrigatória",
+        "reason": "Fatoriais crescem rapidamente e podem causar overflow"
+      },
+      {
+        "question": "A função deve ser recursiva ou iterativa?",
+        "priority": "Desejável",
+        "reason": "Define a abordagem de implementação e possíveis limitações de stack"
+      },
+      {
+        "question": "Qual deve ser o tipo de retorno da função? (inteiro, decimal, big integer)",
+        "priority": "Desejável",
+        "reason": "Afeta a precisão e capacidade de representar números grandes"
+      },
+      {
+        "question": "A função deve validar a entrada antes do cálculo? (verificar se é número inteiro não negativo)",
+        "priority": "Desejável",
+        "reason": "Define se a função inclui validação ou assume entrada válida"
+      }
+    ],
+    "uml_diagrams": [
+      {
+        "type": "sequence",
+        "plantuml_code": "title Diagrama de Sequência - Função Fatorial\n\nactor Usuário as User\nparticipant \"Cliente/App\" as Client\nparticipant \"Função factorial()\" as Factorial\nparticipant \"Sistema de Validação\" as Validation\nparticipant \"Calculadora Fatorial\" as Calculator\n\nUser -> Client: Chama factorial(n)\nactivate Client\n\nClient -> Factorial: factorial(n)\nactivate Factorial\n\nFactorial -> Validation: validarEntrada(n)\nactivate Validation\n\nnote right of Validation\n**Pré-condição:**\n- n deve ser inteiro\n- n ≥ 0\n**Invariante:**\n- Validação ocorre antes do cálculo\nend note\n\nalt Entrada válida (n ≥ 0)\n    Validation --> Factorial: OK\n    deactivate Validation\n    \n    Factorial -> Calculator: calcularFatorial(n)\n    activate Calculator\n    \n    note right of Calculator\n    **Comportamento:**\n    - n=0: retorna 1\n    - n>0: retorna n!\n    **Invariante:**\n    - Resultado sempre ≥ 1\n    end note\n    \n    Calculator --> Factorial: resultado\n    deactivate Calculator\n    \n    Factorial --> Client: retorna resultado\n    deactivate Factorial\n    \n    Client --> User: exibe resultado\n    \nelse Entrada inválida (n < 0 ou não inteiro)\n    Validation --> Factorial: ERRO\n    deactivate Validation\n    \n    Factorial --> Client: lança ValueError\n    deactivate Factorial\n    \n    Client --> User: exibe mensagem de erro\nend alt\n\ndeactivate Client",
+        "description": "**Descrição do Diagrama:**\n\nEste diagrama de sequência representa o fluxo de execução da função fatorial, mostrando:\n\n1. **Atores/Componentes Principais:**\n   - Usuário: inicia a operação\n   - Cliente/App: interface que recebe a chamada\n   - Função factorial(): componente principal\n   - Sistema de Validação: valida o parâmetro de entrada\n   - Calculadora Fatorial: executa o cálculo matemático\n\n2. **Fluxo Principal (Caminho Feliz):**\n   - Validação bem-sucedida → Cálculo do fatorial → Retorno do resultado\n\n3. **Fluxo Alternativo (Tratamento de Erro):**\n   - Validação falha → Lançamento de exceção → Exibição de mensagem de erro\n\n4. **Anotações Importantes:**\n   - Pré-condições e invariantes são destacadas para validação e cálculo\n   - O diagrama mostra claramente a separação entre validação e cálculo\n   - O tratamento de erros é representado como um fluxo alternativo\n\nO diagrama captura toda a lógica especificada no requisito, incluindo validação, cálculo e tratamento de exceções."
+      }
+    ],
+    "generated_code": "def factorial(n):\n    \"\"\"\n    Calcula o fatorial de um número inteiro não negativo.\n    \n    Args:\n        n (int): Número inteiro não negativo para calcular o fatorial\n        \n    Returns:\n        int: Resultado do fatorial de n (n!)\n        \n    Raises:\n        ValueError: Se n não for um inteiro ou for negativo\n        \n    Examples:\n        >>> factorial(0)\n        1\n        >>> factorial(5)\n        120\n    \"\"\"\n    # Validação da entrada\n    if not isinstance(n, int):\n        raise ValueError(\"O parâmetro deve ser um número inteiro\")\n    \n    if n < 0:\n        raise ValueError(\"O fatorial não está definido para números negativos\")\n    \n    # Caso base: fatorial de 0 é 1\n    if n == 0:\n        return 1\n    \n    # Abordagem iterativa para calcular o fatorial\n    result = 1\n    for i in range(1, n + 1):\n        result *= i\n    \n    return result",
+    "generated_tests": "import unittest\n\nclass TestFactorial(unittest.TestCase):\n    \"\"\"Testes unitários para a função factorial\"\"\"\n    \n    def test_factorial_zero(self):\n        \"\"\"Testa o fatorial de 0 (caso base)\"\"\"\n        self.assertEqual(factorial(0), 1)\n    \n    def test_factorial_positive_numbers(self):\n        \"\"\"Testa o fatorial de números positivos\"\"\"\n        self.assertEqual(factorial(1), 1)\n        self.assertEqual(factorial(2), 2)\n        self.assertEqual(factorial(3), 6)\n        self.assertEqual(factorial(5), 120)\n        self.assertEqual(factorial(10), 3628800)\n    \n    def test_factorial_large_numbers(self):\n        \"\"\"Testa o fatorial de números grandes (verifica big integer)\"\"\"\n        self.assertEqual(factorial(12), 479001600)  # Limite de 32 bits\n        self.assertEqual(factorial(20), 2432902008176640000)  # Limite de 64 bits\n    \n    def test_factorial_negative_number(self):\n        \"\"\"Testa se lança ValueError para números negativos\"\"\"\n        with self.assertRaises(ValueError) as context:\n            factorial(-1)\n        self.assertEqual(str(context.exception), \"O fatorial não está definido para números negativos\")\n        \n        with self.assertRaises(ValueError) as context:\n            factorial(-5)\n        self.assertEqual(str(context.exception), \"O fatorial não está definido para números negativos\")\n    \n    def test_factorial_non_integer(self):\n        \"\"\"Testa se lança ValueError para entradas não inteiras\"\"\"\n        with self.assertRaises(ValueError) as context:\n            factorial(3.5)\n        self.assertEqual(str(context.exception), \"O parâmetro deve ser um número inteiro\")\n        \n        with self.assertRaises(ValueError) as context:\n            factorial(\"5\")\n        self.assertEqual(str(context.exception), \"O parâmetro deve ser um número inteiro\")\n        \n        with self.assertRaises(ValueError) as context:\n            factorial([1, 2, 3])\n        self.assertEqual(str(context.exception), \"O parâmetro deve ser um número inteiro\")\n\nif __name__ == '__main__':\n    unittest.main()",
+    "verification_results": [
+      {
+        "iteration": 1,
+        "results": [
+          {
+            "tool": "tests",
+            "status": "pass",
+            "output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.0, pytest-8.2.0, pluggy-1.5.0 -- C:\\Users\\ladvo\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\ladvo\\AppData\\Local\\Temp\\tmp27ic146p\nplugins: anyio-4.4.0\ncollecting ... collected 5 items\n\ntest_code.py::TestFactorial::test_factorial_large_numbers PASSED         [ 20%]\ntest_code.py::TestFactorial::test_factorial_negative_number PASSED       [ 40%]\ntest_code.py::TestFactorial::test_factorial_non_integer PASSED           [ 60%]\ntest_code.py::TestFactorial::test_factorial_positive_numbers PASSED      [ 80%]\ntest_code.py::TestFactorial::test_factorial_zero PASSED                  [100%]\n\n============================== 5 passed in 0.01s ==============================\n",
+            "errors": [],
+            "warnings": []
+          },
+          {
+            "tool": "linter",
+            "status": "pass",
+            "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n",
+            "errors": [],
+            "warnings": []
+          }
+        ]
+      }
+    ],
+    "iterations": 1,
+    "final_status": "success",
+    "metrics": {
+      "iterations": 1,
+      "tests_passed": true,
+      "linter_passed": true,
+      "total_verifications": 2,
+      "passed_verifications": 2
+    }
+  },
+  {
+    "requirement_id": "req_003",
+    "original_requirement": "Create a function to find the maximum element in a list",
+    "refined_requirement": "**Requisito Refinado: Função find_max**\n\n**Objetivo:**  \nCriar uma função que encontre o elemento máximo em uma lista, considerando elementos comparáveis, com tratamento robusto para casos especiais.\n\n**Especificações:**\n\n1. **Nome da função:** `find_max`\n2. **Parâmetro de entrada:**  \n   - `lista`: Uma lista de elementos (obrigatório)\n\n3. **Comportamento:**\n   - **Caso geral:** Retornar o elemento máximo da lista usando comparação padrão (>)\n   - **Lista vazia:** Retornar `None`\n   - **Tipos de elementos:**  \n     - Aceitar quaisquer elementos que suportem operações de comparação (números, strings, etc.)\n     - Para listas mistas, considerar apenas elementos numéricos válidos (int, float)\n   - **Tratamento de valores especiais:**  \n     - Ignorar valores `None`/`Null` e elementos não numéricos\n     - Se a lista contiver apenas elementos não numéricos ou valores inválidos, retornar `None`\n   - **Integridade da lista:** A lista original não deve ser modificada\n\n4. **Requisitos de performance:**\n   - Complexidade temporal: O(n)\n   - Evitar cópias desnecessárias da lista\n   - Otimizada para listas grandes\n\n5. **Valor de retorno:**\n   - Elemento máximo encontrado (mesmo tipo dos elementos válidos)\n   - `None` se:\n     - Lista estiver vazia\n     - Não houver elementos numéricos válidos\n     - Todos os elementos forem `None`/inválidos\n\n6. **Exceções:**\n   - Não deve lançar exceções para casos de lista vazia ou elementos inválidos\n   - Pode lançar exceções apenas para erros de programação (ex: parâmetro não ser uma lista)\n\n**Exemplo de comportamento:**\n- `find_max([3, 1, 4, 2])` → `4`\n- `find_max([])` → `None`\n- `find_max([10, \"texto\", 5, None, 8])` → `10`\n- `find_max([\"a\", \"b\", \"c\"])` → `None` (ignora não numéricos)\n- `find_max([None, \"texto\"])` → `None` (sem elementos válidos)",
+    "clarification_questions": [
+      {
+        "question": "O que deve acontecer se a lista estiver vazia? Deve retornar None, lançar uma exceção ou outro valor?",
+        "priority": "Obrigatória",
+        "reason": "Define o comportamento para caso de borda crítico"
+      },
+      {
+        "question": "Que tipos de elementos a lista pode conter? Apenas números ou outros tipos comparáveis?",
+        "priority": "Obrigatória",
+        "reason": "Determina a lógica de comparação necessária"
+      },
+      {
+        "question": "Como devem ser tratados elementos não numéricos em listas mistas?",
+        "priority": "Obrigatória",
+        "reason": "Evita erros de tipo durante a comparação"
+      },
+      {
+        "question": "A função deve considerar valores None/Null na lista? Se sim, como tratá-los?",
+        "priority": "Obrigatória",
+        "reason": "Define tratamento de valores nulos"
+      },
+      {
+        "question": "A função deve modificar a lista original ou apenas retornar o valor máximo?",
+        "priority": "Desejável",
+        "reason": "Esclarece se há efeitos colaterais"
+      },
+      {
+        "question": "Deve ser considerada a performance para listas muito grandes? Há restrições de memória?",
+        "priority": "Desejável",
+        "reason": "Define otimizações necessárias"
+      },
+      {
+        "question": "Qual o nome exato da função e seus parâmetros? Há preferência por nomes específicos?",
+        "priority": "Desejável",
+        "reason": "Padroniza a interface da função"
+      }
+    ],
+    "uml_diagrams": [
+      {
+        "type": "sequence",
+        "plantuml_code": "title Função find_max - Diagrama de Sequência\n\nactor Usuário as User\nparticipant \"Cliente/Chamador\" as Client\nparticipant \"find_max()\" as FindMax\nparticipant \"Lista\" as List\nparticipant \"Validação\" as Validation\nparticipant \"Filtro\" as Filter\nparticipant \"Comparação\" as Comparison\n\nUser -> Client: Chamada com lista\nClient -> FindMax: find_max(lista)\n\nnote right of FindMax: Pré-condição: lista deve ser do tipo list\n\nFindMax -> Validation: validar_lista(lista)\nValidation --> FindMax: resultado_validação\n\nalt Lista inválida (não é lista)\n    FindMax --> Client: Lançar exceção\n    Client --> User: Erro de tipo\nelse Lista vazia\n    FindMax --> Client: None\n    Client --> User: None\nelse Lista válida não vazia\n    FindMax -> Filter: filtrar_elementos_validos(lista)\n    Filter --> FindMax: elementos_numericos\n    \n    alt Sem elementos válidos\n        FindMax --> Client: None\n        Client --> User: None\n    else Com elementos válidos\n        FindMax -> Comparison: encontrar_maximo(elementos_numericos)\n        Comparison --> FindMax: elemento_maximo\n        \n        note right of Comparison: Invariante: lista não modificada\\nComplexidade O(n)\n        \n        FindMax --> Client: elemento_maximo\n        Client --> User: elemento_maximo\n    end\nend",
+        "description": "**Descrição do diagrama:**\n\nEste diagrama de sequência representa o fluxo de execução da função `find_max` conforme especificado. O fluxo principal inicia com o usuário chamando a função através de um cliente, seguindo estas etapas:\n\n1. **Validação da entrada**: Verifica se o parâmetro é realmente uma lista\n2. **Verificação de lista vazia**: Retorna `None` imediatamente se a lista estiver vazia\n3. **Filtragem de elementos**: Remove valores `None` e elementos não numéricos\n4. **Busca do máximo**: Encontra o elemento máximo entre os elementos válidos filtrados\n5. **Retorno do resultado**: Retorna o valor máximo encontrado ou `None` se não houver elementos válidos\n\nO diagrama mostra os caminhos alternativos para cada caso especial (lista inválida, vazia, sem elementos válidos) e destaca as invariantes importantes: preservação da lista original e complexidade O(n)."
+      }
+    ],
+    "generated_code": "def find_max(lista):\n    \"\"\"\n    Encontra o elemento máximo em uma lista, considerando apenas elementos numéricos válidos.\n    \n    Args:\n        lista: Uma lista de elementos (obrigatório)\n    \n    Returns:\n        Elemento máximo encontrado (int ou float) ou None se:\n        - Lista estiver vazia\n        - Não houver elementos numéricos válidos\n        - Todos os elementos forem None/inválidos\n    \n    Raises:\n        TypeError: Se o parâmetro não for uma lista\n    \"\"\"\n    # Validação do tipo de parâmetro\n    if not isinstance(lista, list):\n        raise TypeError(\"O parâmetro deve ser uma lista\")\n    \n    # Caso lista vazia\n    if len(lista) == 0:\n        return None\n    \n    # Filtra apenas elementos numéricos válidos (int ou float) e ignora None\n    elementos_validos = []\n    for elemento in lista:\n        if elemento is not None and isinstance(elemento, (int, float)):\n            elementos_validos.append(elemento)\n    \n    # Se não há elementos válidos, retorna None\n    if len(elementos_validos) == 0:\n        return None\n    \n    # Encontra o máximo usando algoritmo O(n)\n    maximo = elementos_validos[0]\n    for elemento in elementos_validos[1:]:\n        if elemento > maximo:\n            maximo = elemento\n    \n    return maximo",
+    "generated_tests": "import unittest\n\nclass TestFindMax(unittest.TestCase):\n    \n    def test_lista_vazia(self):\n        \"\"\"Testa o caso de lista vazia\"\"\"\n        self.assertIsNone(find_max([]))\n    \n    def test_lista_numeros_inteiros(self):\n        \"\"\"Testa lista com números inteiros\"\"\"\n        self.assertEqual(find_max([3, 1, 4, 2]), 4)\n        self.assertEqual(find_max([-5, -1, -10]), -1)\n        self.assertEqual(find_max([10]), 10)\n    \n    def test_lista_numeros_decimais(self):\n        \"\"\"Testa lista com números decimais\"\"\"\n        self.assertEqual(find_max([3.5, 1.2, 4.8, 2.1]), 4.8)\n        self.assertEqual(find_max([-3.5, -1.2, -4.8]), -1.2)\n    \n    def test_lista_mista_numeros(self):\n        \"\"\"Testa lista com números inteiros e decimais\"\"\"\n        self.assertEqual(find_max([3, 1.5, 4, 2.8]), 4)\n        self.assertEqual(find_max([3.5, 1, 4.2, 2]), 4.2)\n    \n    def test_lista_com_elementos_invalidos(self):\n        \"\"\"Testa lista com elementos não numéricos e None\"\"\"\n        self.assertEqual(find_max([10, \"texto\", 5, None, 8]), 10)\n        self.assertEqual(find_max([None, 3, \"a\", 7]), 7)\n    \n    def test_lista_apenas_elementos_invalidos(self):\n        \"\"\"Testa lista apenas com elementos não numéricos\"\"\"\n        self.assertIsNone(find_max([\"a\", \"b\", \"c\"]))\n        self.assertIsNone(find_max([None, \"texto\"]))\n        self.assertIsNone(find_max([None, None, None]))\n        self.assertIsNone(find_max([\"texto1\", \"texto2\"]))\n    \n    def test_lista_com_zeros(self):\n        \"\"\"Testa lista contendo zeros\"\"\"\n        self.assertEqual(find_max([0, -1, -5]), 0)\n        self.assertEqual(find_max([0, 0, 0]), 0)\n    \n    def test_lista_grande(self):\n        \"\"\"Testa performance com lista grande\"\"\"\n        lista_grande = list(range(1000))\n        self.assertEqual(find_max(lista_grande), 999)\n    \n    def test_lista_nao_modificada(self):\n        \"\"\"Testa que a lista original não é modificada\"\"\"\n        lista_original = [3, 1, 4, 2]\n        lista_copia = lista_original.copy()\n        resultado = find_max(lista_original)\n        self.assertEqual(lista_original, lista_copia)\n        self.assertEqual(resultado, 4)\n    \n    def test_parametro_nao_lista(self):\n        \"\"\"Testa exceção quando parâmetro não é lista\"\"\"\n        with self.assertRaises(TypeError):\n            find_max(\"não é lista\")\n        with self.assertRaises(TypeError):\n            find_max(123)\n        with self.assertRaises(TypeError):\n            find_max({\"chave\": \"valor\"})\n\nif __name__ == '__main__':\n    unittest.main()",
+    "verification_results": [
+      {
+        "iteration": 1,
+        "results": [
+          {
+            "tool": "tests",
+            "status": "pass",
+            "output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.0, pytest-8.2.0, pluggy-1.5.0 -- C:\\Users\\ladvo\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\ladvo\\AppData\\Local\\Temp\\tmpbytbov_s\nplugins: anyio-4.4.0\ncollecting ... collected 10 items\n\ntest_code.py::TestFindMax::test_lista_apenas_elementos_invalidos PASSED  [ 10%]\ntest_code.py::TestFindMax::test_lista_com_elementos_invalidos PASSED     [ 20%]\ntest_code.py::TestFindMax::test_lista_com_zeros PASSED                   [ 30%]\ntest_code.py::TestFindMax::test_lista_grande PASSED                      [ 40%]\ntest_code.py::TestFindMax::test_lista_mista_numeros PASSED               [ 50%]\ntest_code.py::TestFindMax::test_lista_nao_modificada PASSED              [ 60%]\ntest_code.py::TestFindMax::test_lista_numeros_decimais PASSED            [ 70%]\ntest_code.py::TestFindMax::test_lista_numeros_inteiros PASSED            [ 80%]\ntest_code.py::TestFindMax::test_lista_vazia PASSED                       [ 90%]\ntest_code.py::TestFindMax::test_parametro_nao_lista PASSED               [100%]\n\n============================= 10 passed in 0.02s ==============================\n",
+            "errors": [],
+            "warnings": []
+          },
+          {
+            "tool": "linter",
+            "status": "pass",
+            "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n",
+            "errors": [],
+            "warnings": []
+          }
+        ]
+      }
+    ],
+    "iterations": 1,
+    "final_status": "success",
+    "metrics": {
+      "iterations": 1,
+      "tests_passed": true,
+      "linter_passed": true,
+      "total_verifications": 2,
+      "passed_verifications": 2
+    }
+  },
+  {
+    "requirement_id": "req_004",
+    "original_requirement": "Write a function that checks if a string is a palindrome",
+    "refined_requirement": "**Requisito Refinado: Função de Verificação de Palíndromo**\n\n**Objetivo:**  \nDesenvolver uma função que determine se uma string é um palíndromo, considerando as especificações abaixo.\n\n**Especificações:**\n\n1. **Entrada:**\n   - A função deve aceitar exclusivamente um parâmetro do tipo `string`.\n   - Se outro tipo de dado for fornecido, a função deve lançar uma exceção (ex: `TypeError`).\n\n2. **Pré-processamento da String:**\n   - **Espaços em branco:** Devem ser removidos antes da verificação.\n   - **Caracteres não alfanuméricos:** Pontuação, símbolos e caracteres especiais devem ser removidos, mantendo apenas letras (a-z, A-Z) e números (0-9).\n   - **Case-sensitivity:** A verificação deve ser sensível a maiúsculas e minúsculas (case-sensitive).\n\n3. **Lógica de Verificação:**\n   - Um palíndromo é definido como uma string que permanece idêntica quando lida de trás para frente após o pré-processamento.\n   - **String vazia:** Após o pré-processamento, se a string resultante for vazia, deve ser considerada um palíndromo.\n\n4. **Saída:**\n   - Retornar um valor booleano: `true` se a string for um palíndromo, `false` caso contrário.\n\n5. **Performance:**\n   - A função deve ser otimizada para operar com complexidade O(n), onde `n` é o comprimento da string após o pré-processamento.\n   - Não há restrições explícitas de tamanho máximo da string.\n\n**Exemplos de Comportamento Esperado:**\n- `isPalindrome(\"\")` → `true` (string vazia é palíndromo)\n- `isPalindrome(\"Rotator\")` → `true` (case-sensitive, válido com capitalização)\n- `isPalindrome(\"A man, a plan, a canal: Panama\")` → `false` (caracteres especiais removidos, mas \"AmanaplanacanalPanama\" não é igual invertido devido ao case-sensitivity)\n- `isPalindrome(\"socorram me subi no onibus em marrocos\")` → `true` (espaços removidos, \"socorramesubinoonibusemmarrocos\" é palíndromo)\n- `isPalindrome(123)` → Lança `TypeError` (não-string)\n\n**Notas Adicionais:**\n- A implementação deve validar os critérios acima sem depender de bibliotecas externas (a menos que especificado em requisitos complementares).\n- Casos de teste devem cobrir combinações de espaços, caracteres especiais e variações de capitalização.",
+    "clarification_questions": [
+      {
+        "question": "Como a função deve tratar espaços em branco? Eles devem ser ignorados ou considerados na verificação?",
+        "priority": "Obrigatória",
+        "reason": "Define se 'ana' e 'a n a' são considerados palíndromos diferentes"
+      },
+      {
+        "question": "A função deve ser case-sensitive (diferenciar maiúsculas de minúsculas)?",
+        "priority": "Obrigatória",
+        "reason": "Determina se 'Ana' e 'ana' são tratados como palíndromos diferentes"
+      },
+      {
+        "question": "Como a função deve lidar com caracteres especiais e pontuação? Eles devem ser removidos ou considerados?",
+        "priority": "Obrigatória",
+        "reason": "Define o tratamento de strings como 'A man, a plan, a canal: Panama!'"
+      },
+      {
+        "question": "A função deve considerar strings vazias como palíndromos?",
+        "priority": "Obrigatória",
+        "reason": "Estabelece o comportamento para casos extremos"
+      },
+      {
+        "question": "Qual deve ser o tipo de retorno da função? (boolean, string customizada, exceção?)",
+        "priority": "Obrigatória",
+        "reason": "Define a interface de saída que os desenvolvedores devem implementar"
+      },
+      {
+        "question": "A função deve aceitar apenas strings ou também outros tipos de dados?",
+        "priority": "Desejável",
+        "reason": "Clarifica se a função deve validar o tipo de entrada ou converter automaticamente"
+      },
+      {
+        "question": "Há alguma restrição de performance ou tamanho máximo da string a ser verificada?",
+        "priority": "Desejável",
+        "reason": "Pode influenciar a escolha do algoritmo para casos com strings muito longas"
+      }
+    ],
+    "uml_diagrams": [
+      {
+        "type": "sequence",
+        "plantuml_code": "title Verificação de Palíndromo - Diagrama de Sequência\n\nactor Usuário as User\nparticipant \"Função isPalindrome\" as Func\nparticipant \"Módulo de Validação\" as Val\nparticipant \"Módulo de Pré-processamento\" as Pre\nparticipant \"Módulo de Verificação\" as Ver\n\nUser -> Func: isPalindrome(input)\nactivate Func\n\nFunc -> Val: validarTipo(input)\nactivate Val\n\nalt Tipo inválido\n    Val --> Func: TypeError\n    Func --> User: Lança exceção\n    deactivate Val\n    deactivate Func\n    return\nelse Tipo válido\n    Val --> Func: OK\n    deactivate Val\nend\n\nFunc -> Pre: pré-processar(input)\nactivate Pre\n\nnote right of Pre: Invariante: Remove espaços,\\ncaracteres não-alfanuméricos\n\nPre --> Func: string_processada\ndeactivate Pre\n\nFunc -> Ver: verificarPalindromo(string_processada)\nactivate Ver\n\nnote right of Ver: Pré-condição: String já\\npré-processada\n\nalt String vazia\n    Ver --> Func: true\nelse Verificação O(n)\n    Ver --> Func: resultado\nend\n\ndeactivate Ver\n\nFunc --> User: retorna boolean\ndeactivate Func",
+        "description": "**Descrição do Diagrama:**\n\nEste diagrama de sequência representa o fluxo principal da função de verificação de palíndromo, mostrando:\n\n1. **Ator Principal:** Usuário que chama a função `isPalindrome`\n2. **Componentes Principais:**\n   - Função principal `isPalindrome`\n   - Módulo de Validação (verifica tipo de entrada)\n   - Módulo de Pré-processamento (limpeza da string)\n   - Módulo de Verificação (lógica do palíndromo)\n\n3. **Fluxo de Mensagens:**\n   - Validação do tipo de entrada com tratamento de exceção\n   - Pré-processamento com remoção de caracteres indesejados\n   - Verificação do palíndromo com complexidade O(n)\n   - Retorno do resultado booleano\n\n4. **Anotações Importantes:**\n   - Invariante no pré-processamento: garantia de remoção completa de espaços e caracteres não-alfanuméricos\n   - Pré-condição na verificação: string já deve estar pré-processada\n   - Tratamento de caso especial para string vazia\n\nO diagrama captura toda a sequência desde a entrada do usuário até o resultado final, incluindo os caminhos alternativos para tratamento de erros e casos especiais."
+      }
+    ],
+    "generated_code": "def is_palindrome(input_string):\n    \"\"\"\n    Verifica se uma string é um palíndromo após pré-processamento.\n    \n    Args:\n        input_string (str): String a ser verificada\n        \n    Returns:\n        bool: True se for palíndromo, False caso contrário\n        \n    Raises:\n        TypeError: Se o input não for uma string\n    \"\"\"\n    # Validação do tipo de entrada\n    if not isinstance(input_string, str):\n        raise TypeError(\"O input deve ser uma string\")\n    \n    # Pré-processamento: remover caracteres não alfanuméricos e espaços\n    processed_string = ''.join(char for char in input_string if char.isalnum())\n    \n    # Verificação de palíndromo (case-sensitive)\n    # String vazia é considerada palíndromo\n    if not processed_string:\n        return True\n    \n    # Verificação O(n) usando dois ponteiros\n    left, right = 0, len(processed_string) - 1\n    \n    while left < right:\n        if processed_string[left] != processed_string[right]:\n            return False\n        left += 1\n        right -= 1\n    \n    return True",
+    "generated_tests": "import unittest\n\nclass TestIsPalindrome(unittest.TestCase):\n    \n    def test_empty_string(self):\n        \"\"\"Testa string vazia (deve retornar True)\"\"\"\n        self.assertTrue(is_palindrome(\"\"))\n    \n    def test_simple_palindrome(self):\n        \"\"\"Testa palíndromo simples\"\"\"\n        self.assertTrue(is_palindrome(\"Rotator\"))\n        self.assertTrue(is_palindrome(\"racecar\"))\n    \n    def test_complex_palindrome(self):\n        \"\"\"Testa palíndromo com espaços e caracteres especiais\"\"\"\n        self.assertTrue(is_palindrome(\"socorram me subi no onibus em marrocos\"))\n        self.assertTrue(is_palindrome(\"A man, a plan, a canal: Panama\"))\n    \n    def test_non_palindrome(self):\n        \"\"\"Testa strings que não são palíndromos\"\"\"\n        self.assertFalse(is_palindrome(\"hello\"))\n        self.assertFalse(is_palindrome(\"python\"))\n        self.assertFalse(is_palindrome(\"not a palindrome\"))\n    \n    def test_case_sensitivity(self):\n        \"\"\"Testa sensibilidade a maiúsculas/minúsculas\"\"\"\n        self.assertTrue(is_palindrome(\"Racecar\"))  # Case-sensitive, deve ser True\n        self.assertFalse(is_palindrome(\"RaceCar\"))  # Diferente devido ao 'C' maiúsculo\n    \n    def test_numbers_and_special_chars(self):\n        \"\"\"Testa strings com números e caracteres especiais\"\"\"\n        self.assertTrue(is_palindrome(\"12321\"))\n        self.assertTrue(is_palindrome(\"A1b2b1A\"))\n        self.assertTrue(is_palindrome(\"Madam, I'm Adam\"))\n    \n    def test_only_special_chars(self):\n        \"\"\"Testa string apenas com caracteres especiais (deve retornar True para vazio)\"\"\"\n        self.assertTrue(is_palindrome(\"!@#$%^&*()\"))\n        self.assertTrue(is_palindrome(\"   \"))\n    \n    def test_invalid_input_type(self):\n        \"\"\"Testa entrada de tipo inválido\"\"\"\n        with self.assertRaises(TypeError):\n            is_palindrome(123)\n        with self.assertRaises(TypeError):\n            is_palindrome(3.14)\n        with self.assertRaises(TypeError):\n            is_palindrome(['a', 'b', 'c'])\n        with self.assertRaises(TypeError):\n            is_palindrome(None)\n    \n    def test_unicode_characters(self):\n        \"\"\"Testa caracteres Unicode\"\"\"\n        self.assertTrue(is_palindrome(\"été\"))  # Palíndromo francês\n        self.assertFalse(is_palindrome(\"café\"))  # Não palíndromo\n\nif __name__ == '__main__':\n    unittest.main()",
+    "verification_results": [
+      {
+        "iteration": 1,
+        "results": [
+          {
+            "tool": "tests",
+            "status": "fail",
+            "output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.0, pytest-8.2.0, pluggy-1.5.0 -- C:\\Users\\ladvo\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\ladvo\\AppData\\Local\\Temp\\tmp8cdvqxpa\nplugins: anyio-4.4.0\ncollecting ... collected 10 items\n\ntest_code.py::TestIsPalindrome::test_case_sensitivity FAILED             [ 10%]\ntest_code.py::TestIsPalindrome::test_empty_string PASSED                 [ 20%]\ntest_code.py::TestIsPalindrome::test_invalid_input_type PASSED           [ 30%]\ntest_code.py::TestIsPalindrome::test_non_palindrome PASSED               [ 40%]\ntest_code.py::TestIsPalindrome::test_simple_palindrome FAILED            [ 50%]\ntest_code.py::TestIsPalindrome::test_special_characters_only PASSED      [ 60%]\ntest_code.py::TestIsPalindrome::test_special_characters_removal FAILED   [ 70%]\ntest_code.py::TestIsPalindrome::test_whitespace_only PASSED              [ 80%]\ntest_code.py::TestIsPalindrome::test_with_numbers PASSED                 [ 90%]\ntest_code.py::TestIsPalindrome::test_with_spaces_and_punctuation FAILED  [100%]\n\n================================== FAILURES ===================================\n___________________ TestIsPalindrome.test_case_sensitivity ____________________\ntest_code.py:31: in test_case_sensitivity\n    self.assertTrue(is_palindrome(\"Racecar\"))  # Case-sensitive, deve ser False\nE   AssertionError: False is not true\n___________________ TestIsPalindrome.test_simple_palindrome ___________________\ntest_code.py:13: in test_simple_palindrome\n    self.assertTrue(is_palindrome(\"Rotator\"))\nE   AssertionError: False is not true\n______________ TestIsPalindrome.test_special_characters_removal _______________\ntest_code.py:44: in test_special_characters_removal\n    self.assertTrue(is_palindrome(\"Madam, I'm Adam\"))\nE   AssertionError: False is not true\n______________ TestIsPalindrome.test_with_spaces_and_punctuation ______________\ntest_code.py:26: in test_with_spaces_and_punctuation\n    self.assertTrue(is_palindrome(\"A man a plan a canal Panama\"))\nE   AssertionError: False is not true\n=========================== short test summary info ===========================\nFAILED test_code.py::TestIsPalindrome::test_case_sensitivity - AssertionError...\nFAILED test_code.py::TestIsPalindrome::test_simple_palindrome - AssertionErro...\nFAILED test_code.py::TestIsPalindrome::test_special_characters_removal - Asse...\nFAILED test_code.py::TestIsPalindrome::test_with_spaces_and_punctuation - Ass...\n========================= 4 failed, 6 passed in 0.07s =========================\n",
+            "errors": [],
+            "warnings": []
+          },
+          {
+            "tool": "linter",
+            "status": "pass",
+            "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n",
+            "errors": [],
+            "warnings": []
+          }
+        ]
+      },
+      {
+        "iteration": 2,
+        "results": [
+          {
+            "tool": "tests",
+            "status": "fail",
+            "output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.0, pytest-8.2.0, pluggy-1.5.0 -- C:\\Users\\ladvo\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\ladvo\\AppData\\Local\\Temp\\tmpgsyzugfv\nplugins: anyio-4.4.0\ncollecting ... collected 10 items\n\ntest_code.py::TestIsPalindrome::test_case_sensitivity FAILED             [ 10%]\ntest_code.py::TestIsPalindrome::test_empty_string PASSED                 [ 20%]\ntest_code.py::TestIsPalindrome::test_invalid_input_type PASSED           [ 30%]\ntest_code.py::TestIsPalindrome::test_mixed_characters FAILED             [ 40%]\ntest_code.py::TestIsPalindrome::test_non_palindrome PASSED               [ 50%]\ntest_code.py::TestIsPalindrome::test_numeric_palindrome PASSED           [ 60%]\ntest_code.py::TestIsPalindrome::test_simple_palindrome FAILED            [ 70%]\ntest_code.py::TestIsPalindrome::test_special_characters_only PASSED      [ 80%]\ntest_code.py::TestIsPalindrome::test_unicode_characters PASSED           [ 90%]\ntest_code.py::TestIsPalindrome::test_with_spaces_and_punctuation FAILED  [100%]\n\n================================== FAILURES ===================================\n___________________ TestIsPalindrome.test_case_sensitivity ____________________\ntest_code.py:29: in test_case_sensitivity\n    self.assertTrue(is_palindrome(\"Racecar\"))  # R != r no início/fim\nE   AssertionError: False is not true\n___________________ TestIsPalindrome.test_mixed_characters ____________________\ntest_code.py:45: in test_mixed_characters\n    self.assertTrue(is_palindrome(\"Madam, I'm Adam\"))\nE   AssertionError: False is not true\n___________________ TestIsPalindrome.test_simple_palindrome ___________________\ntest_code.py:13: in test_simple_palindrome\n    self.assertTrue(is_palindrome(\"Rotator\"))\nE   AssertionError: False is not true\n______________ TestIsPalindrome.test_with_spaces_and_punctuation ______________\ntest_code.py:23: in test_with_spaces_and_punctuation\n    self.assertTrue(is_palindrome(\"A man a plan a canal Panama\"))\nE   AssertionError: False is not true\n=========================== short test summary info ===========================\nFAILED test_code.py::TestIsPalindrome::test_case_sensitivity - AssertionError...\nFAILED test_code.py::TestIsPalindrome::test_mixed_characters - AssertionError...\nFAILED test_code.py::TestIsPalindrome::test_simple_palindrome - AssertionErro...\nFAILED test_code.py::TestIsPalindrome::test_with_spaces_and_punctuation - Ass...\n========================= 4 failed, 6 passed in 0.07s =========================\n",
+            "errors": [],
+            "warnings": []
+          },
+          {
+            "tool": "linter",
+            "status": "pass",
+            "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n",
+            "errors": [],
+            "warnings": []
+          }
+        ]
+      },
+      {
+        "iteration": 3,
+        "results": [
+          {
+            "tool": "tests",
+            "status": "fail",
+            "output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.0, pytest-8.2.0, pluggy-1.5.0 -- C:\\Users\\ladvo\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\ladvo\\AppData\\Local\\Temp\\tmp7ybhnecv\nplugins: anyio-4.4.0\ncollecting ... collected 9 items\n\ntest_code.py::TestIsPalindrome::test_case_sensitivity FAILED             [ 11%]\ntest_code.py::TestIsPalindrome::test_complex_palindrome FAILED           [ 22%]\ntest_code.py::TestIsPalindrome::test_empty_string PASSED                 [ 33%]\ntest_code.py::TestIsPalindrome::test_invalid_input_type PASSED           [ 44%]\ntest_code.py::TestIsPalindrome::test_non_palindrome PASSED               [ 55%]\ntest_code.py::TestIsPalindrome::test_numbers_and_special_chars FAILED    [ 66%]\ntest_code.py::TestIsPalindrome::test_only_special_chars PASSED           [ 77%]\ntest_code.py::TestIsPalindrome::test_simple_palindrome FAILED            [ 88%]\ntest_code.py::TestIsPalindrome::test_unicode_characters PASSED           [100%]\n\n================================== FAILURES ===================================\n___________________ TestIsPalindrome.test_case_sensitivity ____________________\ntest_code.py:29: in test_case_sensitivity\n    self.assertTrue(is_palindrome(\"Racecar\"))  # Case-sensitive, deve ser True\nE   AssertionError: False is not true\n__________________ TestIsPalindrome.test_complex_palindrome ___________________\ntest_code.py:19: in test_complex_palindrome\n    self.assertTrue(is_palindrome(\"A man, a plan, a canal: Panama\"))\nE   AssertionError: False is not true\n_______________ TestIsPalindrome.test_numbers_and_special_chars _______________\ntest_code.py:36: in test_numbers_and_special_chars\n    self.assertTrue(is_palindrome(\"Madam, I'm Adam\"))\nE   AssertionError: False is not true\n___________________ TestIsPalindrome.test_simple_palindrome ___________________\ntest_code.py:13: in test_simple_palindrome\n    self.assertTrue(is_palindrome(\"Rotator\"))\nE   AssertionError: False is not true\n=========================== short test summary info ===========================\nFAILED test_code.py::TestIsPalindrome::test_case_sensitivity - AssertionError...\nFAILED test_code.py::TestIsPalindrome::test_complex_palindrome - AssertionErr...\nFAILED test_code.py::TestIsPalindrome::test_numbers_and_special_chars - Asser...\nFAILED test_code.py::TestIsPalindrome::test_simple_palindrome - AssertionErro...\n========================= 4 failed, 5 passed in 0.06s =========================\n",
+            "errors": [],
+            "warnings": []
+          },
+          {
+            "tool": "linter",
+            "status": "pass",
+            "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n",
+            "errors": [],
+            "warnings": []
+          }
+        ]
+      }
+    ],
+    "iterations": 3,
+    "final_status": "failed",
+    "metrics": {
+      "iterations": 3,
+      "tests_passed": false,
+      "linter_passed": true,
+      "total_verifications": 2,
+      "passed_verifications": 1
+    }
+  },
+  {
+    "requirement_id": "req_005",
+    "original_requirement": "Implement a function to reverse a string",
+    "refined_requirement": "**Requisito Refinado:**\n\n**Nome da Função:** `reverse_string`\n\n**Parâmetro de Entrada:**\n- `s` (string): A string a ser invertida\n\n**Comportamento:**\n1. **Validação de Entrada:**\n   - A função deve verificar se o parâmetro `s` é do tipo string\n   - Se `s` não for uma string, deve lançar uma exceção `TypeError`\n\n2. **Tratamento de Strings Vazias:**\n   - Se `s` for uma string vazia (`\"\"`), deve retornar uma string vazia (`\"\"`)\n\n3. **Inversão da String:**\n   - A função deve inverter completamente a sequência de caracteres, incluindo todos os elementos (letras, espaços, símbolos, caracteres especiais)\n   - Deve preservar a integridade de caracteres Unicode, emojis e caracteres multi-byte, tratando-os como unidades completas\n   - A inversão deve ser feita em nível de caractere/grafema\n\n4. **Retorno:**\n   - A função deve retornar uma **nova string** com o conteúdo invertido\n   - A string original `s` não deve ser modificada\n\n5. **Requisitos de Performance:**\n   - A implementação deve ter complexidade temporal O(n), onde n é o número de caracteres na string\n   - A complexidade espacial deve ser O(n) para armazenar a string invertida\n\n**Exemplos de Comportamento Esperado:**\n- `reverse_string(\"hello\")` → `\"olleh\"`\n- `reverse_string(\"\")` → `\"\"`\n- `reverse_string(\"a b c\")` → `\"c b a\"`\n- `reverse_string(\"😀🌍\")` → `\"🌍😀\"`\n- `reverse_string(\"café\")` → `\"éfac\"`\n- `reverse_string(123)` → Lança `TypeError`\n\n**Observação:** A implementação deve utilizar métodos que operem em nível de caractere Unicode para garantir o correto tratamento de grafemas compostos e caracteres especiais.",
+    "clarification_questions": [
+      {
+        "question": "A função deve lidar com strings vazias? Se sim, qual deve ser o comportamento?",
+        "priority": "Obrigatória",
+        "reason": "Define o tratamento de caso limite essencial"
+      },
+      {
+        "question": "A função deve preservar caracteres especiais, espaços em branco e formatação?",
+        "priority": "Obrigatória",
+        "reason": "Determina se a reversão é puramente de caracteres ou inclui formatação"
+      },
+      {
+        "question": "Como a função deve lidar com caracteres Unicode, emojis ou caracteres multi-byte?",
+        "priority": "Obrigatória",
+        "reason": "Evita problemas com caracteres especiais que podem quebrar a reversão"
+      },
+      {
+        "question": "A função deve modificar a string original ou retornar uma nova string?",
+        "priority": "Obrigatória",
+        "reason": "Define se é uma operação destrutiva ou não"
+      },
+      {
+        "question": "Qual deve ser o nome exato da função e seus parâmetros?",
+        "priority": "Obrigatória",
+        "reason": "Padroniza a interface da função para integração"
+      },
+      {
+        "question": "Há alguma restrição de performance ou complexidade algorítmica esperada?",
+        "priority": "Desejável",
+        "reason": "Otimiza a implementação para casos de uso específicos"
+      },
+      {
+        "question": "A função deve validar se o input é realmente uma string? Se não for, qual o comportamento?",
+        "priority": "Desejável",
+        "reason": "Define tratamento de erros e robustez da função"
+      }
+    ],
+    "uml_diagrams": [
+      {
+        "type": "sequence",
+        "plantuml_code": "title Diagrama de Sequência - Função reverse_string\n\nactor Usuário as User\nparticipant \"reverse_string\" as Function\nparticipant \"Sistema de Validação\" as Validation\nparticipant \"Manipulador Unicode\" as UnicodeHandler\nparticipant \"String Builder\" as Builder\n\nUser -> Function: reverse_string(s)\nnote right: Pré-condição: s é fornecido\\nInvariante: s permanece inalterado\n\nFunction -> Validation: validar_tipo(s)\nalt s não é string\n    Validation --> Function: TypeError\n    Function --> User: Lança exceção TypeError\nelse s é string vazia\n    Validation --> Function: string_vazia = true\n    Function --> User: Retorna \"\"\nelse s é string não vazia\n    Validation --> Function: string_vazia = false\n    \n    Function -> UnicodeHandler: decompor_caracteres(s)\n    UnicodeHandler --> Function: lista_caracteres[]\n    \n    Function -> Builder: criar_string_invertida(lista_caracteres)\n    note right: Complexidade: O(n) temporal e espacial\n    \n    Builder --> Function: string_invertida\n    Function --> User: Retorna string_invertida\nend",
+        "description": "**Descrição do Diagrama:**\n\nEste diagrama de sequência representa o fluxo de execução da função `reverse_string` conforme especificado. O diagrama mostra:\n\n1. **Ator Principal**: O Usuário que invoca a função\n2. **Componentes Principais**:\n   - `reverse_string`: Função principal\n   - `Sistema de Validação`: Responsável pela validação do tipo e verificação de string vazia\n   - `Manipulador Unicode`: Garante o tratamento correto de caracteres Unicode\n   - `String Builder`: Constrói a string invertida\n\n3. **Fluxo de Eventos**:\n   - Validação do tipo de entrada (com tratamento de exceção)\n   - Caso especial para string vazia\n   - Processamento normal com decomposição Unicode e construção da string invertida\n   - Retorno do resultado ao usuário\n\n4. **Anotações Importantes**:\n   - Pré-condição: A string de entrada é fornecida\n   - Invariante: A string original permanece inalterada\n   - Complexidade garantida: O(n) temporal e espacial\n\nO diagrama captura todos os cenários especificados no requisito, incluindo tratamento de erros, casos especiais e o fluxo principal de inversão com suporte a Unicode."
+      }
+    ],
+    "generated_code": "def reverse_string(s):\n    \"\"\"\n    Inverte uma string preservando caracteres Unicode e emojis.\n    \n    Args:\n        s (str): String a ser invertida\n        \n    Returns:\n        str: Nova string com os caracteres invertidos\n        \n    Raises:\n        TypeError: Se o parâmetro não for uma string\n    \"\"\"\n    # Validação do tipo de entrada\n    if not isinstance(s, str):\n        raise TypeError(f\"Esperado string, mas recebido {type(s).__name__}\")\n    \n    # Tratamento de string vazia\n    if s == \"\":\n        return \"\"\n    \n    # Decomposição da string em caracteres individuais (preserva Unicode)\n    # Usamos list comprehension para criar uma lista de caracteres\n    caracteres = [char for char in s]\n    \n    # Inversão da lista de caracteres\n    caracteres_invertidos = caracteres[::-1]\n    \n    # Reconstrução da string a partir dos caracteres invertidos\n    string_invertida = ''.join(caracteres_invertidos)\n    \n    return string_invertida",
+    "generated_tests": "import unittest\n\nclass TestReverseString(unittest.TestCase):\n    \n    def test_string_simples(self):\n        \"\"\"Testa a inversão de uma string simples\"\"\"\n        self.assertEqual(reverse_string(\"hello\"), \"olleh\")\n        self.assertEqual(reverse_string(\"python\"), \"nohtyp\")\n    \n    def test_string_vazia(self):\n        \"\"\"Testa o tratamento de string vazia\"\"\"\n        self.assertEqual(reverse_string(\"\"), \"\")\n    \n    def test_string_com_espacos(self):\n        \"\"\"Testa a inversão de string com espaços\"\"\"\n        self.assertEqual(reverse_string(\"a b c\"), \"c b a\")\n        self.assertEqual(reverse_string(\"hello world\"), \"dlrow olleh\")\n    \n    def test_emojis_unicode(self):\n        \"\"\"Testa a preservação de emojis e caracteres Unicode\"\"\"\n        self.assertEqual(reverse_string(\"😀🌍\"), \"🌍😀\")\n        self.assertEqual(reverse_string(\"café\"), \"éfac\")\n        self.assertEqual(reverse_string(\"🎉🎊\"), \"🎊🎉\")\n    \n    def test_caracteres_especiais(self):\n        \"\"\"Testa a inversão com caracteres especiais\"\"\"\n        self.assertEqual(reverse_string(\"!@#$\"), \"$#@!\")\n        self.assertEqual(reverse_string(\"a1b2c3\"), \"3c2b1a\")\n    \n    def test_tipos_invalidos(self):\n        \"\"\"Testa a validação de tipos inválidos\"\"\"\n        with self.assertRaises(TypeError):\n            reverse_string(123)\n        with self.assertRaises(TypeError):\n            reverse_string(3.14)\n        with self.assertRaises(TypeError):\n            reverse_string([1, 2, 3])\n        with self.assertRaises(TypeError):\n            reverse_string(None)\n        with self.assertRaises(TypeError):\n            reverse_string(True)\n    \n    def test_imutabilidade_original(self):\n        \"\"\"Testa que a string original não é modificada\"\"\"\n        original = \"teste\"\n        resultado = reverse_string(original)\n        self.assertEqual(original, \"teste\")  # Original deve permanecer inalterada\n        self.assertIsNot(original, resultado)  # Deve ser uma nova string\n    \n    def test_string_longa(self):\n        \"\"\"Testa a inversão de uma string longa\"\"\"\n        long_string = \"a\" * 1000\n        reversed_long = reverse_string(long_string)\n        self.assertEqual(reversed_long, \"a\" * 1000)\n        self.assertEqual(len(reversed_long), 1000)\n\nif __name__ == '__main__':\n    unittest.main()",
+    "verification_results": [
+      {
+        "iteration": 1,
+        "results": [
+          {
+            "tool": "tests",
+            "status": "pass",
+            "output": "============================= test session starts =============================\nplatform win32 -- Python 3.12.0, pytest-8.2.0, pluggy-1.5.0 -- C:\\Users\\ladvo\\AppData\\Local\\Programs\\Python\\Python312\\python.exe\ncachedir: .pytest_cache\nrootdir: C:\\Users\\ladvo\\AppData\\Local\\Temp\\tmpxp9p7lkk\nplugins: anyio-4.4.0\ncollecting ... collected 8 items\n\ntest_code.py::TestReverseString::test_caracteres_especiais PASSED        [ 12%]\ntest_code.py::TestReverseString::test_emojis_unicode PASSED              [ 25%]\ntest_code.py::TestReverseString::test_imutabilidade_original PASSED      [ 37%]\ntest_code.py::TestReverseString::test_string_com_espacos PASSED          [ 50%]\ntest_code.py::TestReverseString::test_string_longa PASSED                [ 62%]\ntest_code.py::TestReverseString::test_string_simples PASSED              [ 75%]\ntest_code.py::TestReverseString::test_string_vazia PASSED                [ 87%]\ntest_code.py::TestReverseString::test_tipos_invalidos PASSED             [100%]\n\n============================== 8 passed in 0.02s ==============================\n",
+            "errors": [],
+            "warnings": []
+          },
+          {
+            "tool": "linter",
+            "status": "pass",
+            "output": "\n------------------------------------\nYour code has been rated at 10.00/10\n\n",
+            "errors": [],
+            "warnings": []
+          }
+        ]
+      }
+    ],
+    "iterations": 1,
+    "final_status": "success",
+    "metrics": {
+      "iterations": 1,
+      "tests_passed": true,
+      "linter_passed": true,
+      "total_verifications": 2,
+      "passed_verifications": 2
+    }
+  }
+]

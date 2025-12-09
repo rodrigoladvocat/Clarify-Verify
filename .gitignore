@@ -38,7 +38,7 @@ ClarifyVerify/
 .env.local
 
 # Results
-results/
+# results/
 *.log
 
 # Data (mantém estrutura, mas ignora dados grandes)
