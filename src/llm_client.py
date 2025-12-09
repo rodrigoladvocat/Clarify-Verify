@@ -92,39 +92,36 @@ class OllamaClient(LLMClient):
             self.logger.info("Generating via Ollama model=%s temperature=%s", self.model, temperature)
             # Ensure model is available locally
             try:
-                # check if the mode is already present
-                ollama_models = ollama.list_models()
-                if self.model not in [m['name'] for m in ollama_models]:
-                    self.logger.info("Model %s not found locally, pulling...", self.model)
-                    ollama.pull(self.model)
+                # pull the model
+                ollama.pull(model=self.model)
             except Exception:
                 # Ignore pull errors; model might already be present
                 self.logger.debug("Model pull skipped or failed; continuing")
 
-            self.logger.info("Calling Ollama generate with model=%s; and input=%s", self.model, prompt[:50] + "..." if len(prompt) > 50 else prompt)
-            output_iterator = ollama.generate(
+            self.logger.info("Chat via Ollama model=%s temperature=%s", self.model, temperature)
+            messages = [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt}
+            ]
+            self.logger.info("Start ollama streaming: %s", messages)
+            output = ollama.chat(
                 model=self.model,
-                prompt=prompt,
+                messages=messages,
                 options={"temperature": float(temperature)},
                 stream=True
             )
-
-            self.logger.info("Streaming Ollama response:")
-            output = ""
-            for output_chunk in output_iterator:
-                chunk = output_chunk.response
-                if chunk:
-                    output += chunk           # update internal buffer
-                    sys.stdout.write(chunk)   # print only the new part
+            content = ""
+            for output_chunk in output:
+                chat_response_chunk = output_chunk.message.content
+                if chat_response_chunk:
+                    content += chat_response_chunk
+                    sys.stdout.write(chat_response_chunk)
                     sys.stdout.flush()
-
-            print()  # Move to next line after streaming the response
-            content = output
-            self.logger.info("Raw Ollama response length=%s", len(content))
+            print()  # for newline after streaming
             if self.remove_think_tags and content:
                 content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL)
             cleaned = content.strip() if content else ""
-            self.logger.info("Ollama response length=%d", len(cleaned))
+            self.logger.debug("Ollama chat response length=%d", len(cleaned))
             return cleaned
         except Exception as e:
             self.logger.error("Ollama error: %s", e)

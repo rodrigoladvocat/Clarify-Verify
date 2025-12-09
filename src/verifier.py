@@ -118,7 +118,7 @@ class Verifier:
                         cwd=tmpdir
                     )
                     
-                    self.logger.info("Pytest return: %d", result.returncode + result.stderr)
+                    self.logger.info("Pytest return: %s", str(result.returncode) + str(result.stderr))
                     
                     if result.returncode == 0:
                         status = VerificationStatus.PASS
@@ -130,11 +130,11 @@ class Verifier:
                     verification_result = VerificationResult(
                         status=status,
                         tool="tests",
-                        output=result.stdout + result.stderr,
+                        output=str(result.stdout) + str(result.stderr),
                         errors=errors,
                         warnings=[]
                     )
-                    self.logger.info("Test verification result: %s", verification_result)
+                    self.logger.info("Test verification result: %s", str(verification_result))
                     return
                 except subprocess.TimeoutExpired:
                     verification_result = VerificationResult(
@@ -144,7 +144,7 @@ class Verifier:
                         errors=["Timeout"],
                         warnings=[]
                     )
-                    self.logger.info("Test verification result (timeout): %s", verification_result)
+                    self.logger.info("Test verification result (timeout): %s", str(verification_result))
                     return
                 except Exception as e:
                     self.logger.error("Error running tests: %s", str(e))
@@ -155,7 +155,7 @@ class Verifier:
                         errors=[str(e)],
                         warnings=[]
                     )
-                    self.logger.info("Test verification result (error): %s", verification_result)
+                    self.logger.info("Test verification result (error): %s", str(verification_result))
                     return
         except Exception as e:
             logging.error("Erro ao criar diretório temporário para testes: %s", str(e))
@@ -305,6 +305,7 @@ class Verifier:
                 errors.append(f"[{result.tool}] {chr(10).join(result.errors[:3])}")
         
         summary = '\n\n'.join(errors) if errors else ""
-        self.logger.debug("Error summary length=%d", len(summary))
+        self.logger.info("Error summary length=%d", len(summary))
+        self.logger.info("Error summary: %s", summary)
         return summary
 
