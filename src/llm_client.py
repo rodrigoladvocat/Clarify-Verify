@@ -7,6 +7,8 @@ from typing import Optional
 import os
 import logging
 
+import sys
+import time
 
 class LLMClient(ABC):
     """Interface abstrata para clientes LLM."""
@@ -90,7 +92,6 @@ class OllamaClient(LLMClient):
             self.logger.info("Generating via Ollama model=%s temperature=%s", self.model, temperature)
             # Ensure model is available locally
             try:
-                self.logger.info("Attempting to pull model=%s", self.model)
                 # check if the mode is already present
                 ollama_models = ollama.list_models()
                 if self.model not in [m['name'] for m in ollama_models]:
@@ -100,13 +101,27 @@ class OllamaClient(LLMClient):
                 # Ignore pull errors; model might already be present
                 self.logger.debug("Model pull skipped or failed; continuing")
 
-            output = ollama.generate(
+            self.logger.info("Calling Ollama generate with model=%s; and input=%s", self.model, prompt[:50] + "..." if len(prompt) > 50 else prompt)
+            output_iterator = ollama.generate(
                 model=self.model,
                 prompt=prompt,
-                options={"temperature": float(temperature)}
+                options={"temperature": float(temperature)},
+                stream=True
             )
-            content = output.response
-            self.logger.info("Raw Ollama response length=%s", content)
+
+            self.logger.info("Streaming Ollama response:")
+            output = ""
+            for output_chunk in output_iterator:
+                chunk = output_chunk.response
+                if chunk:
+                    output += chunk           # update internal buffer
+                    sys.stdout.write(chunk)   # print only the new part
+                    sys.stdout.flush()
+                    time.sleep(0.1)
+
+            print()  # Move to next line after streaming the response
+            content = output
+            self.logger.info("Raw Ollama response length=%s", len(content))
             if self.remove_think_tags and content:
                 content = re.sub(r"<think>.*?</think>", "", content, flags=re.DOTALL)
             cleaned = content.strip() if content else ""

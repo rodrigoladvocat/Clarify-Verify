@@ -96,58 +96,87 @@ class Verifier:
     
     def _run_python_tests(self, code: str, tests: str) -> VerificationResult:
         """Executa testes Python usando pytest."""
-        with tempfile.TemporaryDirectory() as tmpdir:
-            # Salva código e testes em arquivos temporários
-            code_file = os.path.join(tmpdir, "code.py")
-            test_file = os.path.join(tmpdir, "test_code.py")
-            
-            with open(code_file, 'w', encoding='utf-8') as f:
-                f.write(code)
-            
-            with open(test_file, 'w', encoding='utf-8') as f:
-                f.write(tests)
-            
-            try:
-                # Executa pytest
-                result = subprocess.run(
-                    ['python', '-m', 'pytest', test_file, '-v', '--tb=short'],
-                    capture_output=True,
-                    text=True,
-                    timeout=30,
-                    cwd=tmpdir
-                )
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                # Salva código e testes em arquivos temporários
+                code_file = os.path.join(tmpdir, "code.py")
+                test_file = os.path.join(tmpdir, "test_code.py")
                 
-                if result.returncode == 0:
-                    status = VerificationStatus.PASS
-                    errors = []
-                else:
-                    status = VerificationStatus.FAIL
-                    errors = [result.stderr] if result.stderr else []
+                with open(code_file, 'w', encoding='utf-8') as f:
+                    f.write(code)
                 
-                return VerificationResult(
-                    status=status,
-                    tool="tests",
-                    output=result.stdout + result.stderr,
-                    errors=errors,
-                    warnings=[]
-                )
-            except subprocess.TimeoutExpired:
-                return VerificationResult(
-                    status=VerificationStatus.ERROR,
-                    tool="tests",
-                    output="Timeout ao executar testes",
-                    errors=["Timeout"],
-                    warnings=[]
-                )
-            except Exception as e:
-                return VerificationResult(
-                    status=VerificationStatus.ERROR,
-                    tool="tests",
-                    output=f"Erro ao executar testes: {str(e)}",
-                    errors=[str(e)],
-                    warnings=[]
-                )
-    
+                with open(test_file, 'w', encoding='utf-8') as f:
+                    f.write(tests)
+                
+                try:
+                    # Executa pytest
+                    result = subprocess.run(
+                        ['python', '-m', 'pytest', test_file, '-v', '--tb=short'],
+                        capture_output=True,
+                        text=True,
+                        timeout=30,
+                        cwd=tmpdir
+                    )
+                    
+                    self.logger.info("Pytest return: %d", result.returncode + result.stderr)
+                    
+                    if result.returncode == 0:
+                        status = VerificationStatus.PASS
+                        errors = []
+                    else:
+                        status = VerificationStatus.FAIL
+                        errors = [result.stderr] if result.stderr else []
+                        
+                    verification_result = VerificationResult(
+                        status=status,
+                        tool="tests",
+                        output=result.stdout + result.stderr,
+                        errors=errors,
+                        warnings=[]
+                    )
+                    self.logger.info("Test verification result: %s", verification_result)
+                    return
+                except subprocess.TimeoutExpired:
+                    verification_result = VerificationResult(
+                        status=VerificationStatus.ERROR,
+                        tool="tests",
+                        output="Timeout ao executar testes",
+                        errors=["Timeout"],
+                        warnings=[]
+                    )
+                    self.logger.info("Test verification result (timeout): %s", verification_result)
+                    return
+                except Exception as e:
+                    self.logger.error("Error running tests: %s", str(e))
+                    verification_result = VerificationResult(
+                        status=VerificationStatus.ERROR,
+                        tool="tests",
+                        output=f"Erro ao executar testes: {str(e)}",
+                        errors=[str(e)],
+                        warnings=[]
+                    )
+                    self.logger.info("Test verification result (error): %s", verification_result)
+                    return
+        except Exception as e:
+            logging.error("Erro ao criar diretório temporário para testes: %s", str(e))
+            verification_result = VerificationResult(
+                status=VerificationStatus.ERROR,
+                tool="tests",
+                output=f"Erro ao preparar ambiente de testes: {str(e)}",
+                errors=[str(e)],
+                warnings=[]
+            )
+        finally:
+            if 'verification_result' in locals():
+                return verification_result
+            return VerificationResult(
+                status=VerificationStatus.ERROR,
+                tool="tests",
+                output="Erro desconhecido ao executar testes",
+                errors=[],
+                warnings=[]
+            )
+
     def _run_linter(self, code: str, language: str) -> VerificationResult:
         """Executa análise estática (linter)."""
         if language == "python":

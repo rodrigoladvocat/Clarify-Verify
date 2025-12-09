@@ -177,6 +177,7 @@ class CodeGenerator:
         
         # Extrai apenas o código corrigido
         code = self._extract_code_only(response)
+        self.logger.info("Repaired code: %s", code)
         return code
     
     def _extract_code_only(self, response: str) -> str:
