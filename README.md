@@ -60,7 +60,7 @@ Clarify-Verify/
 
    * descrição de design e UML (representação textual, p.ex. PlantUML),
    * código (ex.: funções Python ou Java).
-4. **Verify:** roda testes unitários de referência; executa análise estática (linters, cobertura básica); quando aplicável, traduz propriedade para formato do verificador (p.ex. TLA+/Alloy/SMT) e tenta provar/checar propriedades.
+4. **Verify:** roda testes unitários de referência; executa análise estática (linters, cobertura básica); quando aplicável, traduz propriedade para formato do verificador (p.ex. TLA+/Alloy/SMT) e tenta provar/checar propriedades (não implementado).
 5. **Retroalimentação:** falhas de verificação são transformadas em instruções para o LLM corrigir o código (loop).
 6. **Saída:** versão final do código + relatório de métricas.
 
