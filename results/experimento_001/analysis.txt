@@ -1,0 +1,24 @@
+{
+  "summary": {
+    "total_requirements": 5,
+    "pass_rate": 0.8,
+    "average_iterations": 1.6,
+    "test_pass_rate": 0.8,
+    "linter_pass_rate": 1.0,
+    "verification_coverage": {
+      "total": 10,
+      "passed": 9,
+      "coverage": 0.9
+    }
+  },
+  "failed_cases": 1,
+  "failed_case_ids": [
+    "req_004"
+  ],
+  "success_cases": [
+    "req_001",
+    "req_002",
+    "req_003",
+    "req_005"
+  ]
+}
