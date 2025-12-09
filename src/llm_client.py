@@ -117,7 +117,6 @@ class OllamaClient(LLMClient):
                     output += chunk           # update internal buffer
                     sys.stdout.write(chunk)   # print only the new part
                     sys.stdout.flush()
-                    time.sleep(0.1)
 
             print()  # Move to next line after streaming the response
             content = output
